@@ -49,7 +49,6 @@ const Index = () => {
   
   const handleDownloadReport = () => {
     if (assessment) {
-      // Logique de génération et téléchargement de rapport
       toast({
         title: "Rapport généré",
         description: "Votre rapport de diagnostic est en cours de téléchargement.",
@@ -63,11 +62,19 @@ const Index = () => {
     }
   };
   
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      mainContent.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
   const topCountries = getTopCountriesByScore(5);
   
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      <Header onTabChange={handleTabChange} />
       
       <main className="flex-1">
         {/* Hero Section */}
@@ -82,11 +89,20 @@ const Index = () => {
                   Plateforme d'analyse décisionnelle pour l'implantation et la transformation digitale en Afrique.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Button size="lg" className="bg-white text-primary hover:bg-white/90" onClick={() => setActiveTab("country-analysis")}>
+                  <Button 
+                    size="lg" 
+                    className="bg-white text-primary hover:bg-white/90" 
+                    onClick={() => handleTabChange("country-analysis")}
+                  >
                     Explorer les pays
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
-                  <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/10" onClick={() => setActiveTab("company-assessment")}>
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="bg-transparent border-white text-white hover:bg-white/10"
+                    onClick={() => handleTabChange("company-assessment")}
+                  >
                     Évaluer votre entreprise
                   </Button>
                 </div>
@@ -126,7 +142,7 @@ const Index = () => {
                     Évaluation complète des indicateurs économiques, politiques et sociaux des pays africains.
                   </p>
                   <div className="mt-4 text-center">
-                    <Button variant="link" onClick={() => setActiveTab("country-analysis")}>
+                    <Button variant="link" onClick={() => handleTabChange("country-analysis")}>
                       Analyser un pays
                       <ArrowRight className="ml-1 h-4 w-4" />
                     </Button>
@@ -146,7 +162,7 @@ const Index = () => {
                     Évaluation de la maturité digitale de votre entreprise et identification des besoins.
                   </p>
                   <div className="mt-4 text-center">
-                    <Button variant="link" onClick={() => setActiveTab("company-assessment")}>
+                    <Button variant="link" onClick={() => handleTabChange("company-assessment")}>
                       Démarrer le diagnostic
                       <ArrowRight className="ml-1 h-4 w-4" />
                     </Button>
@@ -258,11 +274,11 @@ const Index = () => {
                   </p>
                   
                   <div className="flex justify-center gap-4 pt-4">
-                    <Button onClick={() => setActiveTab("country-analysis")}>
+                    <Button onClick={() => handleTabChange("country-analysis")}>
                       <Globe2 className="mr-2 h-4 w-4" />
                       Analyse Pays
                     </Button>
-                    <Button onClick={() => setActiveTab("company-assessment")}>
+                    <Button onClick={() => handleTabChange("company-assessment")}>
                       <Building2 className="mr-2 h-4 w-4" />
                       Diagnostic Entreprise
                     </Button>
