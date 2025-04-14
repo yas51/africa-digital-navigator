@@ -4,6 +4,7 @@ import type { CountryData } from '@/data/countriesData';
 import { supabase } from '@/integrations/supabase/client';
 import { updateCountryWithExternalData } from '@/lib/supabase';
 import { updateCountryEconomicData } from '@/lib/economicIndicatorsApi';
+import { updatePoliticalIndicators } from '@/lib/externalApis';
 import { useToast } from "@/hooks/use-toast";
 import GeneralInfo from './country/GeneralInfo';
 import EconomicOverview from './country/EconomicOverview';
@@ -34,8 +35,9 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
           console.log('Mise à jour des données du pays en cours...');
           const updated = await updateCountryWithExternalData(country.id);
           const economicUpdated = await updateCountryEconomicData(country.id);
+          const politicalUpdated = await updatePoliticalIndicators(country.id);
           
-          if (updated || economicUpdated) {
+          if (updated || economicUpdated || politicalUpdated) {
             const { data, error } = await supabase
               .from('countries')
               .select('*')
@@ -43,6 +45,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
               .single();
 
             if (data) {
+              console.log("Données mises à jour avec succès:", data);
               setUpdatedCountry(data as CountryData);
               toast({
                 title: "Données mises à jour",
@@ -52,6 +55,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
           }
         } else {
           await updateCountryEconomicData(country.id);
+          await updatePoliticalIndicators(country.id);
           
           const { data } = await supabase
             .from('countries')
@@ -60,6 +64,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
             .single();
             
           if (data) {
+            console.log("Données fraîches récupérées:", data);
             setUpdatedCountry(data as CountryData);
           }
         }

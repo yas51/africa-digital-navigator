@@ -52,15 +52,16 @@ const updatePoliticalIndicators = async (countryCode: string) => {
     // Vérifier si le code pays est dans notre liste
     if (!politicalDataByCountry[countryCode.toLowerCase()]) {
       console.log(`Aucune donnée spécifique trouvée pour le pays: ${countryCode}`);
+      return false;
     }
 
-    // Extraire les données spécifiques au pays ou utiliser des valeurs par défaut
-    const countrySpecificData = politicalDataByCountry[countryCode.toLowerCase()] || {
-      special_economic_zones: ['Aucune zone spéciale répertoriée'],
-      fiscal_incentives: ['Pas d\'incitations fiscales spécifiques répertoriées']
-    };
-
+    // Extraire les données spécifiques au pays
+    const countrySpecificData = politicalDataByCountry[countryCode.toLowerCase()];
+    
     console.log(`Données spécifiques pour ${countryCode}:`, countrySpecificData);
+
+    // Ajouter un délai pour s'assurer que les données sont enregistrées correctement
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     const politicalData = {
       political_stability_index: Math.random() * 100,
@@ -83,11 +84,11 @@ const updatePoliticalIndicators = async (countryCode: string) => {
 
     if (error) {
       console.error('Erreur lors de la mise à jour des indicateurs politiques:', error);
+      return false;
     } else {
       console.log(`Indicateurs politiques mis à jour avec succès pour: ${countryCode}`);
+      return true;
     }
-    
-    return true;
   } catch (error) {
     console.error('Erreur lors de la mise à jour des données politiques:', error);
     return false;

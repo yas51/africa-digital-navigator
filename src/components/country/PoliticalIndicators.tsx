@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   LineChart,
   Line,
@@ -17,16 +17,33 @@ import {
 } from 'recharts';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import type { CountryData } from '@/data/countriesData';
+import { updatePoliticalIndicators } from '@/lib/externalApis';
 
 interface PoliticalIndicatorsProps {
   country: CountryData;
 }
 
 const PoliticalIndicators = ({ country }: PoliticalIndicatorsProps) => {
+  // Mettre à jour les données politiques au chargement du composant
+  useEffect(() => {
+    const updateData = async () => {
+      console.log(`Tentative de mise à jour des indicateurs politiques pour: ${country.id}`);
+      await updatePoliticalIndicators(country.id);
+    };
+    
+    // Si les données sont manquantes ou stales, les mettre à jour
+    if (!country.special_economic_zones || !country.fiscal_incentives || 
+        !country.political_indicators_last_update || 
+        new Date().getTime() - new Date(country.political_indicators_last_update).getTime() > 3600000) {
+      updateData();
+    }
+  }, [country.id]);
+
   // Vérification des données pour le débogage
   console.log("PoliticalIndicators - Données du pays:", country.id, {
     special_economic_zones: country.special_economic_zones,
-    fiscal_incentives: country.fiscal_incentives
+    fiscal_incentives: country.fiscal_incentives,
+    last_update: country.political_indicators_last_update
   });
 
   const radarData = [
