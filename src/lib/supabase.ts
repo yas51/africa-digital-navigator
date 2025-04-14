@@ -143,7 +143,8 @@ export const startPeriodicUpdates = (intervalMinutes: number = 60) => {
 export const cleanupCountryDuplicates = async (): Promise<void> => {
   const { data: countries, error: fetchError } = await supabase
     .from('countries')
-    .select('*');
+    .select('*')
+    .returns<CountryData[]>();
 
   if (fetchError) {
     console.error('Erreur lors de la récupération des pays:', fetchError);

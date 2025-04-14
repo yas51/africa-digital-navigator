@@ -16,7 +16,8 @@ import {
   fetchCountries, 
   fetchCountryById, 
   subscribeToCountryUpdates, 
-  startPeriodicUpdates 
+  startPeriodicUpdates,
+  cleanupCountryDuplicates 
 } from '@/lib/supabase';
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -31,20 +32,17 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({ onSelect }) => {
   const [selectedRegion, setSelectedRegion] = useState<string>("all-regions");
   const [isUpdating, setIsUpdating] = useState(false);
   
-  // Utiliser React Query pour récupérer les pays
   const { data: countries = [], isLoading, error, refetch } = useQuery({
     queryKey: ['countries'],
     queryFn: fetchCountries
   });
   
-  // Utiliser React Query pour récupérer le pays sélectionné
   const { data: country } = useQuery({
     queryKey: ['country', selectedCountry],
     queryFn: () => fetchCountryById(selectedCountry),
     enabled: !!selectedCountry,
   });
   
-  // Abonnement aux mises à jour en temps réel
   useEffect(() => {
     const unsubscribe = subscribeToCountryUpdates((updatedCountries) => {
       refetch();
@@ -54,7 +52,6 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({ onSelect }) => {
       });
     });
     
-    // Démarrer les mises à jour périodiques
     const stopPeriodicUpdates = startPeriodicUpdates(60); // toutes les heures
     
     return () => {
@@ -63,14 +60,14 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({ onSelect }) => {
     };
   }, [refetch]);
   
-  // Fonction pour forcer une mise à jour manuelle
   const handleManualRefresh = async () => {
     setIsUpdating(true);
     try {
+      await cleanupCountryDuplicates();
       await refetch();
       toast({
         title: "Actualisation manuelle",
-        description: "Les données des pays ont été actualisées manuellement.",
+        description: "Les données des pays ont été nettoyées et actualisées.",
       });
     } catch (error) {
       toast({
