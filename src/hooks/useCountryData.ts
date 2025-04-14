@@ -17,9 +17,10 @@ export const useCountryData = () => {
     queryFn: fetchCountries
   });
 
-  // Log the number of countries returned to understand why only 8 are displayed
+  // Log détaillé des pays chargés
   useEffect(() => {
-    console.log("Number of countries fetched:", countries.length, countries);
+    console.log("Nombre total de pays chargés:", countries.length);
+    console.log("Liste des pays:", countries.map(country => `${country.flag} ${country.name}`));
   }, [countries]);
 
   const handleRefresh = async () => {
