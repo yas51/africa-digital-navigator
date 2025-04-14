@@ -3,18 +3,56 @@ import { supabase } from '@/integrations/supabase/client';
 
 const updatePoliticalIndicators = async (countryCode: string) => {
   try {
+    console.log(`Mise à jour des indicateurs politiques pour: ${countryCode}`);
+    
     // Données spécifiques par pays pour les zones économiques et incitations fiscales
     const politicalDataByCountry: Record<string, any> = {
       'eg': { // Égypte
-        special_economic_zones: ['Zone de Suez', 'Parc technologique du Caire'],
-        fiscal_incentives: ['Exonération pour investissements étrangers', 'Réduction d\'impôts pour startups'],
+        special_economic_zones: ['Zone de Suez', 'Parc technologique du Caire', 'Zone économique du canal de Suez'],
+        fiscal_incentives: ['Exonération pour investissements étrangers', 'Réduction d\'impôts pour startups', 'Incitations pour les énergies renouvelables'],
       },
       'ma': { // Maroc
-        special_economic_zones: ['Zone Franche de Tanger', 'Casablanca Finance City'],
-        fiscal_incentives: ['Exonération fiscale 5 ans', 'Réduction TVA'],
+        special_economic_zones: ['Zone Franche de Tanger', 'Casablanca Finance City', 'Technopole d\'Oujda'],
+        fiscal_incentives: ['Exonération fiscale 5 ans', 'Réduction TVA', 'Allègements pour l\'export'],
       },
-      // Ajouter d'autres pays ici
+      'za': { // Afrique du Sud
+        special_economic_zones: ['Zone industrielle de Coega', 'Zone économique de Johannesburg', 'Parc technologique du Cap'],
+        fiscal_incentives: ['Crédit d\'impôt R&D', 'Incitations pour les entreprises noires', 'Subventions à l\'emploi'],
+      },
+      'ng': { // Nigeria
+        special_economic_zones: ['Zone franche de Lagos', 'Lekki Free Zone', 'Zone économique d\'Abuja'],
+        fiscal_incentives: ['Exonération d\'impôts 3 ans', 'Incentives for Oil & Gas', 'Tarifs préférentiels import/export'],
+      },
+      'ke': { // Kenya
+        special_economic_zones: ['Zone économique de Nairobi', 'Parc technologique de Konza', 'Zone industrielle de Mombasa'],
+        fiscal_incentives: ['Tax holiday 10 ans', 'Incitations pour les startups tech', 'Déduction pour formation'],
+      },
+      'gh': { // Ghana
+        special_economic_zones: ['Ghana Free Zones', 'Tema Export Processing Zone', 'Accra Digital Centre'],
+        fiscal_incentives: ['Exonération fiscale de 10 ans', 'Réductions pour les exportateurs', 'Incitations agricoles'],
+      },
+      'ci': { // Côte d'Ivoire
+        special_economic_zones: ['Zone franche de Grand-Bassam', 'Parc technologique d\'Abidjan', 'Zone industrielle de San Pedro'],
+        fiscal_incentives: ['Exonération fiscale temporaire', 'Incitations secteur agricole', 'Réductions droits de douane'],
+      },
+      'sn': { // Sénégal
+        special_economic_zones: ['Zone économique spéciale de Diass', 'Dakar Integrated Special Economic Zone', 'Parc industriel de Diamniadio'],
+        fiscal_incentives: ['Crédit d\'impôt pour l\'investissement', 'Exemptions fiscales temporaires', 'Incitations pour l\'agriculture'],
+      },
+      'rw': { // Rwanda
+        special_economic_zones: ['Kigali Special Economic Zone', 'Bugesera Industrial Park', 'Muhima Free Trade Zone'],
+        fiscal_incentives: ['Tax holiday 7 ans', 'Exonération droits d\'importation', 'Incitations pour les secteurs prioritaires'],
+      },
+      'et': { // Éthiopie
+        special_economic_zones: ['Hawassa Industrial Park', 'Addis Ababa ICT Park', 'Bole Lemi Industrial Park'],
+        fiscal_incentives: ['Exonération fiscale jusqu\'à 8 ans', 'Importation duty-free', 'Incitations pour les exportateurs'],
+      }
     };
+    
+    // Vérifier si le code pays est dans notre liste
+    if (!politicalDataByCountry[countryCode.toLowerCase()]) {
+      console.log(`Aucune donnée spécifique trouvée pour le pays: ${countryCode}`);
+    }
 
     const politicalData = {
       political_stability_index: Math.random() * 100,
@@ -23,11 +61,17 @@ const updatePoliticalIndicators = async (countryCode: string) => {
       geopolitical_risk_score: Math.random() * 100,
       fiscal_transparency_score: Math.random() * 100,
       ...(politicalDataByCountry[countryCode.toLowerCase()] || {
-        special_economic_zones: ['Aucune zone spéciale'],
-        fiscal_incentives: ['Pas d\'incitations fiscales spécifiques']
+        special_economic_zones: ['Aucune zone spéciale répertoriée'],
+        fiscal_incentives: ['Pas d\'incitations fiscales spécifiques répertoriées']
       }),
       political_indicators_last_update: new Date().toISOString()
     };
+
+    // Vérifier les données avant mise à jour
+    console.log(`Données à mettre à jour pour ${countryCode}:`, {
+      special_economic_zones: politicalData.special_economic_zones,
+      fiscal_incentives: politicalData.fiscal_incentives
+    });
 
     const { error } = await supabase
       .from('countries')
@@ -36,6 +80,8 @@ const updatePoliticalIndicators = async (countryCode: string) => {
 
     if (error) {
       console.error('Erreur lors de la mise à jour des indicateurs politiques:', error);
+    } else {
+      console.log(`Indicateurs politiques mis à jour avec succès pour: ${countryCode}`);
     }
   } catch (error) {
     console.error('Erreur lors de la mise à jour des données politiques:', error);
