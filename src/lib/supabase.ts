@@ -3,6 +3,8 @@ import type { CountryData } from '@/data/countriesData';
 import { fetchWorldBankData, fetchUNData } from './externalApis';
 
 export const fetchCountries = async (): Promise<CountryData[]> => {
+  console.log("Début de récupération des pays depuis Supabase");
+  
   const { data, error } = await supabase
     .from('countries')
     .select('*')
@@ -12,6 +14,8 @@ export const fetchCountries = async (): Promise<CountryData[]> => {
     console.error('Error fetching countries:', error);
     throw error;
   }
+  
+  console.log(`Nombre de pays récupérés: ${data?.length || 0}`);
   
   return data || [];
 };
@@ -68,13 +72,11 @@ export const fetchTopCountriesByScore = async (count: number = 5): Promise<Count
 
 export const updateCountryWithExternalData = async (countryId: string) => {
   try {
-    // Récupérer les données externes
     const [worldBankData, unData] = await Promise.all([
       fetchWorldBankData(countryId),
       fetchUNData(countryId)
     ]);
 
-    // Mettre à jour les données dans Supabase si on a reçu de nouvelles données
     if (worldBankData.length > 0) {
       const { error } = await supabase
         .from('countries')
@@ -82,6 +84,14 @@ export const updateCountryWithExternalData = async (countryId: string) => {
           gdp: worldBankData[0]?.value || null,
           population: worldBankData[1]?.value || null,
           gdpGrowth: worldBankData[2]?.value || null,
+          wb_gini_index: worldBankData[3]?.value || null,
+          wb_poverty_ratio: worldBankData[4]?.value || null,
+          wb_ease_business_score: worldBankData[5]?.value || null,
+          wb_trade_percentage: worldBankData[6]?.value || null,
+          wb_fdi_net_inflows: worldBankData[7]?.value || null,
+          wb_internet_users_percent: worldBankData[8]?.value || null,
+          wb_mobile_subscriptions: worldBankData[9]?.value || null,
+          wb_last_updated: new Date().toISOString()
         })
         .eq('id', countryId);
 
@@ -105,11 +115,9 @@ export const subscribeToCountryUpdates = (callback: (countries: CountryData[]) =
       schema: 'public',
       table: 'countries',
     }, async (payload) => {
-      // Fix TypeScript error by checking if payload.new exists and has an id property
       if (payload.new && typeof payload.new === 'object' && 'id' in payload.new) {
         await updateCountryWithExternalData(payload.new.id);
       }
-      // Récupérer toutes les données mises à jour
       const { data } = await supabase.from('countries').select('*');
       if (data) callback(data as CountryData[]);
     })
@@ -130,13 +138,10 @@ export const startPeriodicUpdates = (intervalMinutes: number = 60) => {
     }
   };
 
-  // Première mise à jour
   updateAllCountries();
 
-  // Mettre en place la mise à jour périodique
   const interval = setInterval(updateAllCountries, intervalMinutes * 60 * 1000);
 
-  // Retourner une fonction pour arrêter les mises à jour
   return () => clearInterval(interval);
 };
 
@@ -151,6 +156,8 @@ export const cleanupCountryDuplicates = async (): Promise<void> => {
     return;
   }
 
+  console.log(`Nettoyage des doublons: ${countries?.length || 0} pays trouvés`);
+
   const uniqueCountries = countries?.reduce((acc, country) => {
     const existingCountry = acc.find(c => 
       c.name.toLowerCase() === country.name.toLowerCase()
@@ -163,8 +170,9 @@ export const cleanupCountryDuplicates = async (): Promise<void> => {
     return acc;
   }, [] as CountryData[]);
 
+  console.log(`Après dédoublonnage: ${uniqueCountries?.length || 0} pays uniques`);
+
   if (uniqueCountries) {
-    // Supprimer tous les pays existants
     const { error: deleteError } = await supabase
       .from('countries')
       .delete()
@@ -175,7 +183,6 @@ export const cleanupCountryDuplicates = async (): Promise<void> => {
       return;
     }
 
-    // Insérer les pays uniques
     const { error: insertError } = await supabase
       .from('countries')
       .upsert(uniqueCountries);

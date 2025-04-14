@@ -28,6 +28,14 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({ onSelect }) => {
   
   const { countries, isLoading, error, refetch, handleRefresh } = useCountryData();
   
+  // Ajouter un log pour voir combien de pays sont disponibles
+  useEffect(() => {
+    console.log(`CountrySelector - Nombre total de pays disponibles: ${countries.length}`);
+    if (countries.length > 0) {
+      console.log("Premiers pays disponibles:", countries.slice(0, 5).map(c => `${c.flag} ${c.name}`));
+    }
+  }, [countries]);
+  
   const { data: country } = useQuery({
     queryKey: ['country', selectedCountry],
     queryFn: () => fetchCountryById(selectedCountry),
@@ -36,6 +44,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({ onSelect }) => {
   
   useEffect(() => {
     const unsubscribe = subscribeToCountryUpdates((updatedCountries) => {
+      console.log(`Mise à jour des pays reçue - ${updatedCountries.length} pays`);
       refetch();
     });
     
@@ -56,6 +65,11 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({ onSelect }) => {
   const filteredCountries = selectedRegion === "all-regions"
     ? countries
     : countries.filter(country => country.region === selectedRegion);
+
+  // Ajoutons un log pour voir combien de pays sont filtrés
+  useEffect(() => {
+    console.log(`Pays filtrés par région (${selectedRegion}): ${filteredCountries.length}`);
+  }, [filteredCountries, selectedRegion]);
 
   const handleCountryChange = (value: string) => {
     setSelectedCountry(value);
@@ -96,9 +110,11 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({ onSelect }) => {
               <SelectTrigger id="country">
                 <SelectValue placeholder={isLoading ? "Chargement..." : "Sélectionnez un pays"} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-[300px]">
                 {isLoading ? (
                   <SelectItem value="loading" disabled>Chargement des pays...</SelectItem>
+                ) : filteredCountries.length === 0 ? (
+                  <SelectItem value="none" disabled>Aucun pays disponible</SelectItem>
                 ) : (
                   filteredCountries.map(country => (
                     <SelectItem key={country.id} value={country.id}>
