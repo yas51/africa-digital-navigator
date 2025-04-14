@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import type { CountryData } from '@/data/countriesData';
 import { fetchWorldBankData, fetchUNData } from './externalApis';
@@ -105,8 +106,8 @@ export const subscribeToCountryUpdates = (callback: (countries: CountryData[]) =
       schema: 'public',
       table: 'countries',
     }, async (payload) => {
-      // Mettre à jour les données externes pour le pays modifié
-      if (payload.new && payload.new.id) {
+      // Fix TypeScript error by checking if payload.new exists and has an id property
+      if (payload.new && typeof payload.new === 'object' && 'id' in payload.new) {
         await updateCountryWithExternalData(payload.new.id);
       }
       // Récupérer toutes les données mises à jour

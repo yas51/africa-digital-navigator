@@ -9,12 +9,18 @@ import {
   startPeriodicUpdates,
   cleanupCountryDuplicates 
 } from '@/lib/supabase';
+import { useEffect } from 'react';
 
 export const useCountryData = () => {
   const { data: countries = [], isLoading, error, refetch } = useQuery({
     queryKey: ['countries'],
     queryFn: fetchCountries
   });
+
+  // Log the number of countries returned to understand why only 8 are displayed
+  useEffect(() => {
+    console.log("Number of countries fetched:", countries.length, countries);
+  }, [countries]);
 
   const handleRefresh = async () => {
     try {
