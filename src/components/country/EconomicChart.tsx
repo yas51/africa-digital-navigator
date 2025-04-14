@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { TrendingUp } from 'lucide-react';
 import type { CountryData } from '@/data/countriesData';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
@@ -11,39 +11,26 @@ interface EconomicChartProps {
 }
 
 const EconomicChart = ({ country }: EconomicChartProps) => {
-  // Création des données pour le graphique
+  // Transformation des données pour un affichage correct sur le graphique
   const chartData = [
     {
-      name: 'Croissance',
-      value: country.gdpGrowth,
-      label: 'Croissance PIB (%)',
-      color: 'hsl(142, 76%, 36%)'
-    },
-    {
-      name: 'Inflation',
-      value: country.current_inflation || 0,
-      label: 'Inflation (%)',
-      color: 'hsl(346, 87%, 43%)'
-    },
-    {
-      name: 'Chômage',
-      value: country.unemployment_rate || 0,
-      label: 'Taux de chômage (%)',
-      color: 'hsl(200, 95%, 14%)'
-    },
-    {
-      name: 'Dette',
-      value: country.public_debt_gdp || 0,
-      label: 'Dette publique (% PIB)',
-      color: 'hsl(32, 95%, 44%)'
-    },
-    {
-      name: 'Balance',
-      value: country.trade_balance || 0,
-      label: 'Balance commerciale (% PIB)',
-      color: 'hsl(262, 83%, 58%)'
+      category: "Indicateurs",
+      "Croissance PIB (%)": country.gdpGrowth,
+      "Inflation (%)": country.current_inflation || 0,
+      "Taux de chômage (%)": country.unemployment_rate || 0,
+      "Dette publique (% PIB)": country.public_debt_gdp || 0,
+      "Balance commerciale (% PIB)": country.trade_balance || 0,
     }
   ];
+
+  // Configuration des couleurs pour chaque indicateur
+  const colors = {
+    "Croissance PIB (%)": 'hsl(142, 76%, 36%)',
+    "Inflation (%)": 'hsl(346, 87%, 43%)',
+    "Taux de chômage (%)": 'hsl(200, 95%, 14%)',
+    "Dette publique (% PIB)": 'hsl(32, 95%, 44%)',
+    "Balance commerciale (% PIB)": 'hsl(262, 83%, 58%)'
+  };
 
   return (
     <Card className="col-span-full">
@@ -56,7 +43,7 @@ const EconomicChart = ({ country }: EconomicChartProps) => {
         <ChartContainer
           className="w-full h-full"
           config={{
-            line: {
+            bar: {
               theme: {
                 light: "hsl(142, 76%, 36%)",
                 dark: "hsl(142, 76%, 36%)",
@@ -64,10 +51,19 @@ const EconomicChart = ({ country }: EconomicChartProps) => {
             },
           }}
         >
-          <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+          <BarChart 
+            data={chartData} 
+            margin={{ top: 20, right: 30, left: 20, bottom: 100 }}
+            layout="vertical"
+          >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="label" />
-            <YAxis />
+            <XAxis type="number" />
+            <YAxis 
+              dataKey="category" 
+              type="category" 
+              tick={false} 
+              axisLine={false}
+            />
             <ChartTooltip
               content={({ active, payload }) => {
                 if (!active || !payload?.length) return null;
@@ -79,18 +75,21 @@ const EconomicChart = ({ country }: EconomicChartProps) => {
                 );
               }}
             />
-            <Legend />
-            {chartData.map((entry) => (
-              <Line
-                key={entry.name}
-                type="monotone"
-                dataKey="value"
-                stroke={entry.color}
-                name={entry.label}
-                data={[entry]}
+            <Legend 
+              layout="horizontal" 
+              verticalAlign="bottom" 
+              align="center"
+              wrapperStyle={{ bottom: -80 }}
+            />
+            {Object.keys(colors).map((key) => (
+              <Bar 
+                key={key} 
+                dataKey={key} 
+                fill={colors[key as keyof typeof colors]} 
+                name={key}
               />
             ))}
-          </LineChart>
+          </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>
