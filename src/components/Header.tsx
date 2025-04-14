@@ -65,7 +65,10 @@ const Header: React.FC<HeaderProps> = ({ onTabChange }) => {
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
         <Link to="/" className="flex items-center gap-2">
           <Globe2 className="h-6 w-6 text-primary" />
-          <span className="text-xl font-bold text-primary">YOA DIGITAL ANALYZER - SAAS</span>
+          <div className="flex flex-col">
+            <span className="text-xl font-bold text-primary">YOA for Digital & AI Analyzer - SAAS</span>
+            <span className="text-sm text-muted-foreground">For Africa</span>
+          </div>
         </Link>
         <nav className="hidden md:flex items-center gap-6">
           <a 

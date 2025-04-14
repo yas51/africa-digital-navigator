@@ -115,7 +115,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
   const handleExportPDF = async () => {
     toast({
       title: "Export PDF en cours",
-      description: "Préparation du PDF d'analyse...",
+      description: "Préparation du rapport détaillé...",
     });
     
     try {
@@ -124,23 +124,45 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
       
       const doc = new jsPDF('p', 'mm', 'a4');
       
-      const dashboardElement = document.getElementById('analysis-dashboard-content');
-      
-      if (!dashboardElement) {
-        throw new Error("Dashboard element not found");
-      }
-      
-      doc.setFontSize(22);
-      doc.text("Dashboard d'Analyse", 105, 20, { align: 'center' });
-      
+      // Title and Header
+      doc.setFontSize(24);
+      doc.text("YOA for Digital & AI Analyzer - SAAS", 105, 20, { align: 'center' });
       doc.setFontSize(16);
-      doc.text(`${assessment.companyName} - ${country.name} ${country.flag}`, 105, 30, { align: 'center' });
+      doc.text("For Africa", 105, 30, { align: 'center' });
       
+      doc.setFontSize(20);
+      doc.text("Rapport d'Analyse Détaillé", 105, 45, { align: 'center' });
+      
+      // Company and Date Information
       doc.setFontSize(12);
-      doc.text(`Généré le: ${new Date().toLocaleDateString()}`, 15, 40);
-      doc.text(`Score de Maturité: ${assessment.readinessScore}/100 (${getMaturityLevel(assessment.readinessScore)})`, 15, 50);
-      doc.text(`Secteur: ${assessment.sector}`, 15, 60);
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 60);
+      doc.text(`Entreprise: ${assessment.companyName}`, 20, 70);
+      doc.text(`Secteur: ${assessment.sector}`, 20, 80);
+      doc.text(`Taille: ${assessment.size}`, 20, 90);
       
+      // Scores Section
+      doc.setFontSize(16);
+      doc.text("Scores de Maturité", 20, 110);
+      doc.setFontSize(12);
+      doc.text(`Score Global: ${assessment.readinessScore}/100`, 25, 120);
+      
+      let yPos = 130;
+      Object.entries(assessment.categoryScores).forEach(([category, score]) => {
+        doc.text(`${category}: ${score}/100`, 25, yPos);
+        yPos += 10;
+      });
+      
+      // Compétences Section
+      doc.setFontSize(16);
+      doc.text("Compétences Digitales", 20, yPos + 10);
+      doc.setFontSize(12);
+      yPos += 20;
+      assessment.skills.forEach(skill => {
+        doc.text(`• ${skill}`, 25, yPos);
+        yPos += 10;
+      });
+      
+      // Add Charts
       try {
         const radarElement = document.querySelector('.radar-chart-container');
         if (radarElement) {
@@ -148,9 +170,10 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
             scale: 0.7,
             useCORS: true,
           });
-          
+          doc.addPage();
+          doc.text("Analyse Radar de Maturité", 105, 20, { align: 'center' });
           const radarImg = radarCanvas.toDataURL('image/png');
-          doc.addImage(radarImg, 'PNG', 120, 70, 80, 80);
+          doc.addImage(radarImg, 'PNG', 20, 30, 170, 170);
         }
         
         const gapElement = document.querySelector('.gap-chart-container');
@@ -159,66 +182,47 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
             scale: 0.7,
             useCORS: true,
           });
-          
+          doc.addPage();
+          doc.text("Analyse des Écarts", 105, 20, { align: 'center' });
           const gapImg = gapCanvas.toDataURL('image/png');
-          doc.addImage(gapImg, 'PNG', 10, 70, 100, 80);
+          doc.addImage(gapImg, 'PNG', 20, 30, 170, 170);
         }
-        
-        doc.text("Roadmap de Transformation Digitale", 15, 160);
-        let yPos = 170;
-        
-        phases.forEach(phase => {
-          doc.setFontSize(11);
-          doc.text(`${phase.title} (${phase.timeframe}) - Priorité: ${phase.priority}`, 20, yPos);
-          yPos += 8;
-        });
-        
-        doc.addPage();
-        
-        doc.setFontSize(16);
-        doc.text("Détail des Recommandations", 105, 20, { align: 'center' });
-        
-        doc.setFontSize(14);
-        doc.text("Scores par Catégorie", 15, 40);
-        
-        doc.setFontSize(11);
-        yPos = 50;
-        Object.entries(assessment.categoryScores).forEach(([category, score]) => {
-          doc.text(`${category}: ${score}/100`, 20, yPos);
-          yPos += 8;
-        });
-        
-        doc.setFontSize(14);
-        doc.text("Recommandations Prioritaires", 15, yPos + 10);
-        
-        const recommendations = [
-          "Stratégie Données: Développer une stratégie de collecte et gestion des données",
-          "Tableau de Bord Analytique: Implémentation d'un tableau de bord d'analyse",
-          "Infrastructure Cloud: Migration progressive vers une infrastructure cloud",
-          "Formation et Recrutement: Développer un plan de formation pour les équipes"
-        ];
-        
-        doc.setFontSize(11);
-        yPos += 20;
-        recommendations.forEach(rec => {
-          doc.text(`- ${rec}`, 20, yPos);
-          yPos += 8;
-        });
       } catch (error) {
-        console.error("Error capturing sections:", error);
+        console.error("Error capturing charts:", error);
       }
       
+      // Recommendations Section
+      doc.addPage();
+      doc.setFontSize(16);
+      doc.text("Plan de Transformation Digitale", 105, 20, { align: 'center' });
+      
+      yPos = 40;
+      phases.forEach((phase, index) => {
+        doc.setFontSize(14);
+        doc.text(`${phase.title} (${phase.timeframe})`, 20, yPos);
+        doc.setFontSize(12);
+        doc.text(`Priorité: ${phase.priority}`, 25, yPos + 10);
+        yPos += 20;
+        
+        phase.projects.forEach(project => {
+          doc.text(`• ${project}`, 25, yPos);
+          yPos += 10;
+        });
+        yPos += 10;
+      });
+      
+      // Save the PDF
       doc.save(`analyse-${assessment.companyName.replace(/\s+/g, '-').toLowerCase()}.pdf`);
       
       toast({
         title: "Export réussi",
-        description: "Le PDF d'analyse a été généré et téléchargé avec succès.",
+        description: "Le rapport détaillé a été généré et téléchargé avec succès.",
       });
     } catch (error) {
       console.error("Error exporting PDF:", error);
       toast({
         title: "Erreur d'export",
-        description: "Une erreur est survenue lors de la génération du PDF.",
+        description: "Une erreur est survenue lors de la génération du rapport.",
         variant: "destructive",
       });
     }
