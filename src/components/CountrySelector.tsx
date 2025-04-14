@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Select, 
   SelectContent, 
@@ -7,10 +7,14 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Globe2, TrendingUp, LandPlot, Users, BarChart3 } from 'lucide-react';
-import { countriesData, getCountryById, regions } from '@/data/countriesData';
+import { Globe2, TrendingUp, BarChart3 } from 'lucide-react';
+import { regions } from '@/data/countriesData';
+import type { CountryData } from '@/data/countriesData';
+import { useQuery } from '@tanstack/react-query';
+import { fetchCountries, fetchCountryById, subscribeToCountryUpdates } from '@/lib/supabase';
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface CountrySelectorProps {
   onSelect: (countryId: string) => void;
@@ -20,9 +24,33 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({ onSelect }) => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedRegion, setSelectedRegion] = useState<string>("all-regions");
   
+  // Utiliser React Query pour récupérer les pays
+  const { data: countries = [], isLoading, error, refetch } = useQuery({
+    queryKey: ['countries'],
+    queryFn: fetchCountries
+  });
+  
+  // Utiliser React Query pour récupérer le pays sélectionné
+  const { data: country } = useQuery({
+    queryKey: ['country', selectedCountry],
+    queryFn: () => fetchCountryById(selectedCountry),
+    enabled: !!selectedCountry,
+  });
+  
+  // Abonnement aux mises à jour en temps réel
+  useEffect(() => {
+    const unsubscribe = subscribeToCountryUpdates(() => {
+      refetch();
+    });
+    
+    return () => {
+      unsubscribe();
+    };
+  }, [refetch]);
+  
   const filteredCountries = selectedRegion === "all-regions"
-    ? countriesData
-    : countriesData.filter(country => country.region === selectedRegion);
+    ? countries
+    : countries.filter(country => country.region === selectedRegion);
 
   const handleCountryChange = (value: string) => {
     setSelectedCountry(value);
@@ -34,7 +62,9 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({ onSelect }) => {
     setSelectedCountry("");
   };
   
-  const country = selectedCountry ? getCountryById(selectedCountry) : null;
+  if (error) {
+    return <div className="text-red-500">Erreur lors du chargement des données: {(error as Error).message}</div>;
+  }
   
   return (
     <div className="space-y-6">
@@ -56,20 +86,46 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({ onSelect }) => {
         
         <div>
           <Label htmlFor="country">Pays</Label>
-          <Select value={selectedCountry} onValueChange={handleCountryChange}>
+          <Select value={selectedCountry} onValueChange={handleCountryChange} disabled={isLoading}>
             <SelectTrigger id="country">
-              <SelectValue placeholder="Sélectionnez un pays" />
+              <SelectValue placeholder={isLoading ? "Chargement..." : "Sélectionnez un pays"} />
             </SelectTrigger>
             <SelectContent>
-              {filteredCountries.map(country => (
-                <SelectItem key={country.id} value={country.id}>
-                  {country.flag} {country.name}
-                </SelectItem>
-              ))}
+              {isLoading ? (
+                <SelectItem value="loading" disabled>Chargement des pays...</SelectItem>
+              ) : (
+                filteredCountries.map(country => (
+                  <SelectItem key={country.id} value={country.id}>
+                    {country.flag} {country.name}
+                  </SelectItem>
+                ))
+              )}
             </SelectContent>
           </Select>
         </div>
       </div>
+      
+      {isLoading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="card-hover">
+              <CardHeader className="pb-2">
+                <Skeleton className="h-5 w-40" />
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {[1, 2, 3, 4].map((j) => (
+                    <div key={j} className="flex justify-between">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
       
       {country && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

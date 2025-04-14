@@ -1,0 +1,90 @@
+
+import { createClient } from '@supabase/supabase-js';
+import type { CountryData } from '@/data/countriesData';
+
+// Les URLs et clés seront automatiquement fournies par l'intégration Supabase de Lovable
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+export const fetchCountries = async (): Promise<CountryData[]> => {
+  const { data, error } = await supabase
+    .from('countries')
+    .select('*');
+  
+  if (error) {
+    console.error('Error fetching countries:', error);
+    throw error;
+  }
+  
+  return data || [];
+};
+
+export const fetchCountryById = async (id: string): Promise<CountryData | null> => {
+  const { data, error } = await supabase
+    .from('countries')
+    .select('*')
+    .eq('id', id)
+    .single();
+  
+  if (error) {
+    console.error(`Error fetching country with id ${id}:`, error);
+    if (error.code === 'PGRST116') {
+      // PGRST116 est le code pour "No rows found"
+      return null;
+    }
+    throw error;
+  }
+  
+  return data;
+};
+
+export const fetchCountriesByRegion = async (region: string): Promise<CountryData[]> => {
+  const { data, error } = await supabase
+    .from('countries')
+    .select('*')
+    .eq('region', region);
+  
+  if (error) {
+    console.error(`Error fetching countries in region ${region}:`, error);
+    throw error;
+  }
+  
+  return data || [];
+};
+
+export const fetchTopCountriesByScore = async (count: number = 5): Promise<CountryData[]> => {
+  const { data, error } = await supabase
+    .from('countries')
+    .select('*')
+    .order('opportunityScore', { ascending: false })
+    .limit(count);
+  
+  if (error) {
+    console.error('Error fetching top countries:', error);
+    throw error;
+  }
+  
+  return data || [];
+};
+
+// Fonction pour abonner un composant aux mises à jour en temps réel
+export const subscribeToCountryUpdates = (callback: (countries: CountryData[]) => void) => {
+  const subscription = supabase
+    .channel('countries_updates')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'countries',
+    }, (payload) => {
+      // Quand il y a un changement, on refait un fetch complet
+      fetchCountries().then(callback);
+    })
+    .subscribe();
+  
+  // Retourne une fonction pour se désabonner
+  return () => {
+    supabase.removeChannel(subscription);
+  };
+};
