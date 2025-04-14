@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, LabelList } from 'recharts';
 import { TrendingUp } from 'lucide-react';
 import type { CountryData } from '@/data/countriesData';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
@@ -11,7 +10,6 @@ interface EconomicChartProps {
 }
 
 const EconomicChart = ({ country }: EconomicChartProps) => {
-  // Transformation des données pour un affichage correct sur le graphique
   const chartData = [
     {
       category: "Indicateurs",
@@ -23,13 +21,16 @@ const EconomicChart = ({ country }: EconomicChartProps) => {
     }
   ];
 
-  // Configuration des couleurs pour chaque indicateur
   const colors = {
     "Croissance PIB (%)": 'hsl(142, 76%, 36%)',
     "Inflation (%)": 'hsl(346, 87%, 43%)',
     "Taux de chômage (%)": 'hsl(200, 95%, 14%)',
     "Dette publique (% PIB)": 'hsl(32, 95%, 44%)',
     "Balance commerciale (% PIB)": 'hsl(262, 83%, 58%)'
+  };
+
+  const formatValue = (value: number) => {
+    return value.toFixed(1);
   };
 
   return (
@@ -53,7 +54,7 @@ const EconomicChart = ({ country }: EconomicChartProps) => {
         >
           <BarChart 
             data={chartData} 
-            margin={{ top: 20, right: 30, left: 20, bottom: 100 }}
+            margin={{ top: 20, right: 80, left: 20, bottom: 100 }}
             layout="vertical"
           >
             <CartesianGrid strokeDasharray="3 3" />
@@ -87,7 +88,14 @@ const EconomicChart = ({ country }: EconomicChartProps) => {
                 dataKey={key} 
                 fill={colors[key as keyof typeof colors]} 
                 name={key}
-              />
+              >
+                <LabelList 
+                  dataKey={key} 
+                  position="right" 
+                  formatter={formatValue}
+                  style={{ fill: '#666', fontSize: '12px' }}
+                />
+              </Bar>
             ))}
           </BarChart>
         </ChartContainer>
