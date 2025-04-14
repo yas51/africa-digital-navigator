@@ -1,6 +1,6 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import type { CountryData } from '@/data/countriesData';
+import { fetchWorldBankData, fetchUNData } from './externalApis';
 
 export const fetchCountries = async (): Promise<CountryData[]> => {
   const { data, error } = await supabase
@@ -66,6 +66,37 @@ export const fetchTopCountriesByScore = async (count: number = 5): Promise<Count
   return data || [];
 };
 
+export const updateCountryWithExternalData = async (countryId: string) => {
+  try {
+    // Récupérer les données externes
+    const [worldBankData, unData] = await Promise.all([
+      fetchWorldBankData(countryId),
+      fetchUNData(countryId)
+    ]);
+
+    // Mettre à jour les données dans Supabase si on a reçu de nouvelles données
+    if (worldBankData.length > 0) {
+      const { error } = await supabase
+        .from('countries')
+        .update({
+          gdp: worldBankData[0]?.value || null,
+          population: worldBankData[1]?.value || null,
+          gdpGrowth: worldBankData[2]?.value || null,
+        })
+        .eq('id', countryId);
+
+      if (error) {
+        console.error('Erreur lors de la mise à jour des données:', error);
+      }
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour des données externes:', error);
+    return false;
+  }
+};
+
 export const subscribeToCountryUpdates = (callback: (countries: CountryData[]) => void) => {
   const subscription = supabase
     .channel('countries_updates')
@@ -73,14 +104,38 @@ export const subscribeToCountryUpdates = (callback: (countries: CountryData[]) =
       event: '*',
       schema: 'public',
       table: 'countries',
-    }, (payload) => {
-      // Quand il y a un changement, on refait un fetch complet
-      fetchCountries().then(callback);
+    }, async (payload) => {
+      // Mettre à jour les données externes pour le pays modifié
+      if (payload.new && payload.new.id) {
+        await updateCountryWithExternalData(payload.new.id);
+      }
+      // Récupérer toutes les données mises à jour
+      const { data } = await supabase.from('countries').select('*');
+      if (data) callback(data as CountryData[]);
     })
     .subscribe();
-  
-  // Retourne une fonction pour se désabonner
+
   return () => {
     supabase.removeChannel(subscription);
   };
+};
+
+export const startPeriodicUpdates = (intervalMinutes: number = 60) => {
+  const updateAllCountries = async () => {
+    const { data: countries } = await supabase.from('countries').select('id');
+    if (countries) {
+      for (const country of countries) {
+        await updateCountryWithExternalData(country.id);
+      }
+    }
+  };
+
+  // Première mise à jour
+  updateAllCountries();
+
+  // Mettre en place la mise à jour périodique
+  const interval = setInterval(updateAllCountries, intervalMinutes * 60 * 1000);
+
+  // Retourner une fonction pour arrêter les mises à jour
+  return () => clearInterval(interval);
 };
