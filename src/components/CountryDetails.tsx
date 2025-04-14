@@ -1,14 +1,59 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe2, TrendingUp, BarChart3 } from 'lucide-react';
 import type { CountryData } from '@/data/countriesData';
+import { supabase } from '@/integrations/supabase/client';
+import { updateCountryWithExternalData } from '@/lib/supabase';
+import { toast } from "@/components/ui/toast";
 
 interface CountryDetailsProps {
   country: CountryData;
 }
 
 const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
+  const [updatedCountry, setUpdatedCountry] = useState<CountryData>(country);
+
+  useEffect(() => {
+    const updateCountryData = async () => {
+      try {
+        console.log(`Dernière mise à jour des données: ${country.wb_last_updated}`);
+
+        const isDataStale = !country.wb_last_updated || 
+          (new Date().getTime() - new Date(country.wb_last_updated).getTime()) > 24 * 60 * 60 * 1000;
+
+        if (isDataStale) {
+          console.log('Mise à jour des données du pays en cours...');
+          const updated = await updateCountryWithExternalData(country.id);
+          
+          if (updated) {
+            const { data, error } = await supabase
+              .from('countries')
+              .select('*')
+              .eq('id', country.id)
+              .single();
+
+            if (data) {
+              setUpdatedCountry(data);
+              toast({
+                title: "Données mises à jour",
+                description: `Les données pour ${country.name} ont été actualisées.`
+              });
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour des données:', error);
+        toast({
+          title: "Erreur de mise à jour",
+          description: "Impossible de mettre à jour les données du pays.",
+          variant: "destructive"
+        });
+      }
+    };
+
+    updateCountryData();
+  }, [country]);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <Card className="card-hover">
@@ -92,6 +137,15 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
               <span className="font-medium">{country.politicalStability}/100</span>
             </div>
           </div>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Informations de mise à jour</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div>Dernière mise à jour: {updatedCountry.wb_last_updated ? new Date(updatedCountry.wb_last_updated).toLocaleString() : 'Jamais'}</div>
         </CardContent>
       </Card>
     </div>
