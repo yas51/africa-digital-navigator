@@ -1,4 +1,3 @@
-
 // API pour récupérer les indicateurs économiques en temps réel
 
 /**
