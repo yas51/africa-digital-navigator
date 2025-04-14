@@ -12,8 +12,11 @@ export type Database = {
       countries: {
         Row: {
           corruptionIndex: number
+          current_inflation: number | null
           doingBusinessRank: number
           education: number
+          exchange_rate: number | null
+          exchange_rate_volatility: number | null
           fdiInflow: number
           flag: string
           gdp: number
@@ -21,6 +24,7 @@ export type Database = {
           hdi: number
           id: string
           internetPenetration: number
+          last_real_time_update: string | null
           logisticsIndex: number
           mobilePenetration: number
           name: string
@@ -28,7 +32,10 @@ export type Database = {
           opportunityScore: number
           politicalStability: number
           population: number
+          public_debt_gdp: number | null
           region: string
+          trade_balance: number | null
+          unemployment_rate: number | null
           wb_ease_business_score: number | null
           wb_fdi_net_inflows: number | null
           wb_gini_index: number | null
@@ -42,8 +49,11 @@ export type Database = {
         }
         Insert: {
           corruptionIndex: number
+          current_inflation?: number | null
           doingBusinessRank: number
           education: number
+          exchange_rate?: number | null
+          exchange_rate_volatility?: number | null
           fdiInflow: number
           flag: string
           gdp: number
@@ -51,6 +61,7 @@ export type Database = {
           hdi: number
           id: string
           internetPenetration: number
+          last_real_time_update?: string | null
           logisticsIndex: number
           mobilePenetration: number
           name: string
@@ -58,7 +69,10 @@ export type Database = {
           opportunityScore: number
           politicalStability: number
           population: number
+          public_debt_gdp?: number | null
           region: string
+          trade_balance?: number | null
+          unemployment_rate?: number | null
           wb_ease_business_score?: number | null
           wb_fdi_net_inflows?: number | null
           wb_gini_index?: number | null
@@ -72,8 +86,11 @@ export type Database = {
         }
         Update: {
           corruptionIndex?: number
+          current_inflation?: number | null
           doingBusinessRank?: number
           education?: number
+          exchange_rate?: number | null
+          exchange_rate_volatility?: number | null
           fdiInflow?: number
           flag?: string
           gdp?: number
@@ -81,6 +98,7 @@ export type Database = {
           hdi?: number
           id?: string
           internetPenetration?: number
+          last_real_time_update?: string | null
           logisticsIndex?: number
           mobilePenetration?: number
           name?: string
@@ -88,7 +106,10 @@ export type Database = {
           opportunityScore?: number
           politicalStability?: number
           population?: number
+          public_debt_gdp?: number | null
           region?: string
+          trade_balance?: number | null
+          unemployment_rate?: number | null
           wb_ease_business_score?: number | null
           wb_fdi_net_inflows?: number | null
           wb_gini_index?: number | null

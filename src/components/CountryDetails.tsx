@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe2, TrendingUp, BarChart3, DollarSign, Percent, TrendingDown } from 'lucide-react';
