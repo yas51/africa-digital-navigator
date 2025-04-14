@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Globe2, Building2, ArrowRight, ExternalLink } from 'lucide-react';
+import { BarChart3, Globe2, Building2, ArrowRight, ExternalLink, Settings } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CountrySelector from '@/components/CountrySelector';
@@ -16,17 +16,51 @@ const Index = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [assessment, setAssessment] = useState<CompanyAssessment | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
+  const { toast } = useToast();
   
   const handleCountrySelect = (countryId: string) => {
     setSelectedCountry(countryId);
     if (activeTab === "overview") {
       setActiveTab("country-analysis");
     }
+    toast({
+      title: "Pays sélectionné",
+      description: `Vous avez choisi d'analyser le pays avec l'ID: ${countryId}`,
+    });
   };
   
   const handleAssessmentComplete = (data: CompanyAssessment) => {
     setAssessment(data);
     setActiveTab("analysis-dashboard");
+    toast({
+      title: "Diagnostic terminé",
+      description: `Votre diagnostic pour ${data.companyName} a été complété avec succès.`,
+    });
+  };
+  
+  const handleResetAssessment = () => {
+    setAssessment(null);
+    setActiveTab("company-assessment");
+    toast({
+      title: "Réinitialisation du diagnostic",
+      description: "Vous pouvez recommencer le diagnostic de votre entreprise.",
+    });
+  };
+  
+  const handleDownloadReport = () => {
+    if (assessment) {
+      // Logique de génération et téléchargement de rapport
+      toast({
+        title: "Rapport généré",
+        description: "Votre rapport de diagnostic est en cours de téléchargement.",
+      });
+    } else {
+      toast({
+        title: "Erreur",
+        description: "Veuillez compléter le diagnostic avant de générer un rapport.",
+        variant: "destructive",
+      });
+    }
   };
   
   const topCountries = getTopCountriesByScore(5);
@@ -253,14 +287,20 @@ const Index = () => {
                           Votre évaluation pour {assessment.companyName} a été complétée avec succès.
                         </p>
                       </div>
-                      <Button variant="outline" onClick={() => setAssessment(null)}>
+                      <Button variant="outline" onClick={handleResetAssessment}>
                         Recommencer
                       </Button>
                     </div>
-                    <Button onClick={() => setActiveTab("analysis-dashboard")}>
-                      <BarChart3 className="mr-2 h-4 w-4" />
-                      Voir le dashboard d'analyse
-                    </Button>
+                    <div className="flex gap-3">
+                      <Button onClick={() => setActiveTab("analysis-dashboard")}>
+                        <BarChart3 className="mr-2 h-4 w-4" />
+                        Voir le dashboard d'analyse
+                      </Button>
+                      <Button variant="secondary" onClick={handleDownloadReport}>
+                        <Settings className="mr-2 h-4 w-4" />
+                        Télécharger le rapport
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <CompanyAssessmentForm onComplete={handleAssessmentComplete} />
