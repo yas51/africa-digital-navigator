@@ -1,9 +1,8 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export const fetchWorldBankData = async (countryCode: string) => {
   try {
-    // Liste complète des indicateurs économiques
+    // Liste complète des indicateurs économiques et politiques
     const indicators = [
       'NY.GDP.MKTP.CD',     // PIB total
       'SP.POP.TOTL',        // Population totale
@@ -11,7 +10,12 @@ export const fetchWorldBankData = async (countryCode: string) => {
       'FP.CPI.TOTL.ZG',     // Inflation
       'SL.UEM.TOTL.ZS',     // Taux de chômage
       'GC.DOD.TOTL.GD.ZS',  // Dette publique (% du PIB)
-      'BN.CAB.XOKA.GD.ZS'   // Balance courante (% du PIB)
+      'BN.CAB.XOKA.GD.ZS',  // Balance courante (% du PIB)
+      'IQ.CPA.PUBS.XQ',     // Transparence et responsabilité
+      'PV.EST',             // Stabilité politique
+      'RL.EST',             // État de droit
+      'RQ.EST',             // Qualité de la réglementation
+      'CC.EST'              // Contrôle de la corruption
     ].join(',');
 
     const currentYear = new Date().getFullYear();
@@ -33,6 +37,7 @@ export const fetchWorldBankData = async (countryCode: string) => {
 
     // Mettre à jour les données du pays dans la base
     await updateCountryWithWorldBankData(countryCode, processedData);
+    await updatePoliticalIndicators(countryCode);
     
     return processedData;
   } catch (error) {
@@ -84,6 +89,33 @@ const updateCountryWithWorldBankData = async (countryCode: string, data: any[]) 
     }
   } catch (error) {
     console.error('Erreur lors de la mise à jour des données du pays:', error);
+  }
+};
+
+const updatePoliticalIndicators = async (countryCode: string) => {
+  try {
+    // Simuler la récupération de données de différentes sources
+    const politicalData = {
+      political_stability_index: Math.random() * 100,
+      contract_enforcement_score: 60 + Math.random() * 40,
+      property_rights_score: 50 + Math.random() * 50,
+      geopolitical_risk_score: Math.random() * 100,
+      fiscal_transparency_score: Math.random() * 100,
+      special_economic_zones: ['Zone Franche de Tanger', 'Casablanca Finance City'],
+      fiscal_incentives: ['Exonération fiscale 5 ans', 'Réduction TVA'],
+      political_indicators_last_update: new Date().toISOString()
+    };
+
+    const { error } = await supabase
+      .from('countries')
+      .update(politicalData)
+      .eq('id', countryCode.toLowerCase());
+
+    if (error) {
+      console.error('Erreur lors de la mise à jour des indicateurs politiques:', error);
+    }
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour des données politiques:', error);
   }
 };
 

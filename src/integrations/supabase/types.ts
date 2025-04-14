@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       countries: {
         Row: {
+          contract_enforcement_score: number | null
           corruptionIndex: number
           current_inflation: number | null
           doingBusinessRank: number
@@ -18,22 +19,30 @@ export type Database = {
           exchange_rate: number | null
           exchange_rate_volatility: number | null
           fdiInflow: number
+          fiscal_incentives: string[] | null
+          fiscal_transparency_score: number | null
           flag: string
           gdp: number
           gdpGrowth: number
+          geopolitical_risk_score: number | null
           hdi: number
           id: string
           internetPenetration: number
           last_real_time_update: string | null
+          legal_framework_updated_at: string | null
           logisticsIndex: number
           mobilePenetration: number
           name: string
           officialLanguages: string[]
           opportunityScore: number
+          political_indicators_last_update: string | null
+          political_stability_index: number | null
           politicalStability: number
           population: number
+          property_rights_score: number | null
           public_debt_gdp: number | null
           region: string
+          special_economic_zones: string[] | null
           trade_balance: number | null
           unemployment_rate: number | null
           wb_ease_business_score: number | null
@@ -48,6 +57,7 @@ export type Database = {
           wb_trade_percentage: number | null
         }
         Insert: {
+          contract_enforcement_score?: number | null
           corruptionIndex: number
           current_inflation?: number | null
           doingBusinessRank: number
@@ -55,22 +65,30 @@ export type Database = {
           exchange_rate?: number | null
           exchange_rate_volatility?: number | null
           fdiInflow: number
+          fiscal_incentives?: string[] | null
+          fiscal_transparency_score?: number | null
           flag: string
           gdp: number
           gdpGrowth: number
+          geopolitical_risk_score?: number | null
           hdi: number
           id: string
           internetPenetration: number
           last_real_time_update?: string | null
+          legal_framework_updated_at?: string | null
           logisticsIndex: number
           mobilePenetration: number
           name: string
           officialLanguages: string[]
           opportunityScore: number
+          political_indicators_last_update?: string | null
+          political_stability_index?: number | null
           politicalStability: number
           population: number
+          property_rights_score?: number | null
           public_debt_gdp?: number | null
           region: string
+          special_economic_zones?: string[] | null
           trade_balance?: number | null
           unemployment_rate?: number | null
           wb_ease_business_score?: number | null
@@ -85,6 +103,7 @@ export type Database = {
           wb_trade_percentage?: number | null
         }
         Update: {
+          contract_enforcement_score?: number | null
           corruptionIndex?: number
           current_inflation?: number | null
           doingBusinessRank?: number
@@ -92,22 +111,30 @@ export type Database = {
           exchange_rate?: number | null
           exchange_rate_volatility?: number | null
           fdiInflow?: number
+          fiscal_incentives?: string[] | null
+          fiscal_transparency_score?: number | null
           flag?: string
           gdp?: number
           gdpGrowth?: number
+          geopolitical_risk_score?: number | null
           hdi?: number
           id?: string
           internetPenetration?: number
           last_real_time_update?: string | null
+          legal_framework_updated_at?: string | null
           logisticsIndex?: number
           mobilePenetration?: number
           name?: string
           officialLanguages?: string[]
           opportunityScore?: number
+          political_indicators_last_update?: string | null
+          political_stability_index?: number | null
           politicalStability?: number
           population?: number
+          property_rights_score?: number | null
           public_debt_gdp?: number | null
           region?: string
+          special_economic_zones?: string[] | null
           trade_balance?: number | null
           unemployment_rate?: number | null
           wb_ease_business_score?: number | null

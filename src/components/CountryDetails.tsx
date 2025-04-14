@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import type { CountryData } from '@/data/countriesData';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,6 +10,7 @@ import EconomicOverview from './country/EconomicOverview';
 import DigitalOverview from './country/DigitalOverview';
 import EconomicIndicators from './country/EconomicIndicators';
 import BalanceIndicators from './country/BalanceIndicators';
+import PoliticalIndicators from './country/PoliticalIndicators';
 import UpdateInfo from './country/UpdateInfo';
 import EconomicChart from './country/EconomicChart';
 
@@ -80,6 +82,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
         <GeneralInfo country={updatedCountry} />
         <EconomicOverview country={updatedCountry} />
         <DigitalOverview country={updatedCountry} />
+        <PoliticalIndicators country={updatedCountry} />
         <EconomicIndicators country={updatedCountry} />
         <BalanceIndicators country={updatedCountry} />
         <UpdateInfo country={updatedCountry} />
