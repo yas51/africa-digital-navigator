@@ -13,6 +13,7 @@ import AnalysisDashboard from '@/components/AnalysisDashboard';
 import { useQuery } from '@tanstack/react-query';
 import { fetchTopCountriesByScore } from '@/lib/supabase';
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCountryById } from '@/data/countriesData';
 
 const Index = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -54,86 +55,141 @@ const Index = () => {
     });
   };
   
-  const handleDownloadReport = async () => {
-    if (assessment) {
-      toast({
-        title: "Génération du rapport",
-        description: "Votre rapport de diagnostic est en cours de préparation.",
+const handleDownloadReport = async () => {
+  if (assessment) {
+    toast({
+      title: "Génération du rapport",
+      description: "Votre rapport de diagnostic est en cours de préparation...",
+    });
+    
+    try {
+      const { default: jsPDF } = await import('jspdf');
+      const { default: html2canvas } = await import('html2canvas');
+      
+      const doc = new jsPDF('p', 'mm', 'a4');
+      
+      // Page de titre plus détaillée
+      doc.setFontSize(22);
+      doc.text("Rapport de Diagnostic de Maturité Digitale", 105, 20, { align: 'center' });
+      
+      doc.setFontSize(16);
+      doc.text(`${assessment.companyName}`, 105, 30, { align: 'center' });
+      
+      // Informations générales
+      doc.setFontSize(12);
+      let yPos = 50;
+      
+      // Tableau d'informations générales
+      const generalInfo = [
+        `Date: ${new Date().toLocaleDateString()}`,
+        `Secteur: ${assessment.sector}`,
+        `Taille: ${assessment.size}`,
+        `Pays ciblé: ${getCountryById(assessment.countryId)?.name || 'Non spécifié'}`,
+        `Score de Maturité Digitale: ${assessment.readinessScore}/100`
+      ];
+      
+      generalInfo.forEach(info => {
+        doc.text(info, 20, yPos);
+        yPos += 10;
       });
       
-      try {
-        const { default: jsPDF } = await import('jspdf');
-        const { default: html2canvas } = await import('html2canvas');
+      // Section Scores par Catégorie avec une présentation améliorée
+      yPos += 10;
+      doc.setFontSize(16);
+      doc.text("Analyse Détaillée par Catégorie", 20, yPos);
+      
+      yPos += 10;
+      doc.setFontSize(12);
+      
+      const categories = [
+        { name: "Infrastructure", score: assessment.categoryScores["Infrastructure"] || 0 },
+        { name: "Données", score: assessment.categoryScores["Données"] || 0 },
+        { name: "Compétences", score: assessment.categoryScores["Compétences"] || 0 },
+        { name: "Processus", score: assessment.categoryScores["Processus"] || 0 },
+        { name: "Stratégie", score: assessment.categoryScores["Stratégie"] || 0 }
+      ];
+      
+      categories.forEach(category => {
+        const scoreColor = 
+          category.score >= 80 ? "Excellent" : 
+          category.score >= 60 ? "Bon" : 
+          category.score >= 40 ? "Moyen" : 
+          "À améliorer";
         
-        const doc = new jsPDF('p', 'mm', 'a4');
-        
-        doc.setFontSize(22);
-        doc.text("Rapport de Diagnostic Entreprise", 105, 20, { align: 'center' });
-        
-        doc.setFontSize(16);
-        doc.text(`${assessment.companyName}`, 105, 30, { align: 'center' });
-        
-        doc.setFontSize(12);
-        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 40);
-        doc.text(`Secteur: ${assessment.sector}`, 20, 50);
-        doc.text(`Taille: ${assessment.size}`, 20, 60);
-        doc.text(`Score de Maturité Digitale: ${assessment.readinessScore}/100`, 20, 70);
-        
-        doc.text("Scores par Catégorie:", 20, 85);
-        let yPos = 95;
-        Object.entries(assessment.categoryScores).forEach(([category, score]) => {
-          doc.text(`${category}: ${score}/100`, 25, yPos);
-          yPos += 8;
-        });
-        
-        doc.text("Compétences Digitales:", 20, yPos);
-        yPos += 10;
-        assessment.skills.forEach(skill => {
-          doc.text(`- ${skill}`, 25, yPos);
-          yPos += 8;
-        });
-        
-        const dashboardElement = document.getElementById('analysis-dashboard');
-        if (dashboardElement) {
-          try {
-            const canvas = await html2canvas(dashboardElement, {
-              scale: 0.5,
-              useCORS: true,
-              logging: false,
-            });
-            
-            doc.addPage();
-            doc.text("Tableau de Bord d'Analyse", 105, 20, { align: 'center' });
-            
-            const imgData = canvas.toDataURL('image/png');
-            doc.addImage(imgData, 'PNG', 10, 30, 190, 230);
-          } catch (error) {
-            console.error("Error capturing dashboard:", error);
-          }
-        }
-        
-        doc.save(`diagnostic-${assessment.companyName.replace(/\s+/g, '-').toLowerCase()}.pdf`);
-        
-        toast({
-          title: "Rapport généré",
-          description: "Votre rapport de diagnostic a été téléchargé avec succès.",
-        });
-      } catch (error) {
-        console.error("Error generating report:", error);
-        toast({
-          title: "Erreur",
-          description: "Une erreur est survenue lors de la génération du rapport.",
-          variant: "destructive",
-        });
-      }
-    } else {
+        doc.text(`${category.name}: ${category.score}/100 - ${scoreColor}`, 25, yPos);
+        yPos += 8;
+      });
+      
+      // Section Compétences Digitales
+      yPos += 10;
+      doc.setFontSize(16);
+      doc.text("Compétences Digitales", 20, yPos);
+      
+      yPos += 10;
+      doc.setFontSize(12);
+      
+      assessment.skills.forEach((skill, index) => {
+        doc.text(`• ${skill}`, 25, yPos + (index * 8));
+      });
+      
+      // Section Technologies Actuelles
+      yPos += (assessment.skills.length * 8) + 20;
+      doc.setFontSize(16);
+      doc.text("Technologies Actuelles", 20, yPos);
+      
+      yPos += 10;
+      doc.setFontSize(12);
+      
+      assessment.technologies.forEach((tech, index) => {
+        doc.text(`• ${tech}`, 25, yPos + (index * 8));
+      });
+      
+      // Section Objectifs
+      yPos += (assessment.technologies.length * 8) + 20;
+      doc.setFontSize(16);
+      doc.text("Objectifs de Digitalisation", 20, yPos);
+      
+      yPos += 10;
+      doc.setFontSize(12);
+      
+      assessment.objectives.forEach((objective, index) => {
+        doc.text(`• ${objective}`, 25, yPos + (index * 8));
+      });
+      
+      // Section Défis
+      yPos += (assessment.objectives.length * 8) + 20;
+      doc.setFontSize(16);
+      doc.text("Défis Identifiés", 20, yPos);
+      
+      yPos += 10;
+      doc.setFontSize(12);
+      
+      assessment.challenges.forEach((challenge, index) => {
+        doc.text(`• ${challenge}`, 25, yPos + (index * 8));
+      });
+      
+      doc.save(`diagnostic-${assessment.companyName.replace(/\s+/g, '-').toLowerCase()}.pdf`);
+      
+      toast({
+        title: "Rapport généré",
+        description: "Votre rapport détaillé a été téléchargé avec succès.",
+      });
+    } catch (error) {
+      console.error("Erreur lors de la génération du rapport :", error);
       toast({
         title: "Erreur",
-        description: "Veuillez compléter le diagnostic avant de générer un rapport.",
+        description: "Une erreur est survenue lors de la génération du rapport.",
         variant: "destructive",
       });
     }
-  };
+  } else {
+    toast({
+      title: "Erreur",
+      description: "Veuillez compléter le diagnostic avant de générer un rapport.",
+      variant: "destructive",
+    });
+  }
+};
   
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
