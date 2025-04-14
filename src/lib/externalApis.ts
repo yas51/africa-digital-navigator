@@ -1,11 +1,22 @@
 
-// Fonction pour récupérer les données de la Banque Mondiale
+import { supabase } from '@/integrations/supabase/client';
+
 export const fetchWorldBankData = async (countryCode: string) => {
   try {
-    // Indicateurs : PIB, Population, etc.
-    const indicators = 'NY.GDP.MKTP.CD,SP.POP.TOTL,NY.GDP.PCAP.KD.ZG';
+    // Liste complète des indicateurs économiques
+    const indicators = [
+      'NY.GDP.MKTP.CD',     // PIB total
+      'SP.POP.TOTL',        // Population totale
+      'NY.GDP.PCAP.KD.ZG',  // Croissance du PIB par habitant
+      'FP.CPI.TOTL.ZG',     // Inflation
+      'SL.UEM.TOTL.ZS',     // Taux de chômage
+      'GC.DOD.TOTL.GD.ZS',  // Dette publique (% du PIB)
+      'BN.CAB.XOKA.GD.ZS'   // Balance courante (% du PIB)
+    ].join(',');
+
+    const currentYear = new Date().getFullYear();
     const response = await fetch(
-      `https://api.worldbank.org/v2/country/${countryCode}/indicator/${indicators}?format=json&per_page=3&date=2023`
+      `https://api.worldbank.org/v2/country/${countryCode}/indicator/${indicators}?format=json&per_page=7&date=${currentYear},${currentYear-1},${currentYear-2}&cache-bust=${Date.now()}`
     );
     
     if (!response.ok) {
@@ -13,14 +24,69 @@ export const fetchWorldBankData = async (countryCode: string) => {
     }
     
     const data = await response.json();
-    return data[1] || [];
+    const processedData = data[1]?.map(indicator => ({
+      indicatorCode: indicator.indicator.id,
+      indicatorName: indicator.indicator.value,
+      value: indicator.value,
+      year: indicator.date
+    })) || [];
+
+    // Mettre à jour les données du pays dans la base
+    await updateCountryWithWorldBankData(countryCode, processedData);
+    
+    return processedData;
   } catch (error) {
     console.error('Erreur World Bank API:', error);
     return [];
   }
 };
 
-// Fonction pour récupérer les données de l'ONU
+const updateCountryWithWorldBankData = async (countryCode: string, data: any[]) => {
+  try {
+    const updateData: Record<string, any> = {};
+    
+    data.forEach(item => {
+      switch(item.indicatorCode) {
+        case 'NY.GDP.MKTP.CD':
+          updateData.gdp = item.value;
+          break;
+        case 'SP.POP.TOTL':
+          updateData.population = item.value;
+          break;
+        case 'NY.GDP.PCAP.KD.ZG':
+          updateData.gdpGrowth = item.value;
+          break;
+        case 'FP.CPI.TOTL.ZG':
+          updateData.current_inflation = item.value;
+          break;
+        case 'SL.UEM.TOTL.ZS':
+          updateData.unemployment_rate = item.value;
+          break;
+        case 'GC.DOD.TOTL.GD.ZS':
+          updateData.public_debt_gdp = item.value;
+          break;
+        case 'BN.CAB.XOKA.GD.ZS':
+          updateData.trade_balance = item.value;
+          break;
+      }
+    });
+
+    const { error } = await supabase
+      .from('countries')
+      .update({
+        ...updateData,
+        wb_last_updated: new Date().toISOString()
+      })
+      .eq('id', countryCode.toLowerCase());
+
+    if (error) {
+      console.error('Erreur lors de la mise à jour des données:', error);
+    }
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour des données du pays:', error);
+  }
+};
+
 export const fetchUNData = async (countryCode: string) => {
   try {
     const response = await fetch(
