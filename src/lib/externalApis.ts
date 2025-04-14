@@ -1,4 +1,6 @@
 
+import { supabase } from '@/integrations/supabase/client';
+
 const updatePoliticalIndicators = async (countryCode: string) => {
   try {
     // Données spécifiques par pays pour les zones économiques et incitations fiscales
@@ -39,3 +41,15 @@ const updatePoliticalIndicators = async (countryCode: string) => {
     console.error('Erreur lors de la mise à jour des données politiques:', error);
   }
 };
+
+export const fetchWorldBankData = async (countryCode: string) => {
+  // Implémentation fictive pour résoudre l'erreur d'importation
+  return [];
+};
+
+export const fetchUNData = async (countryCode: string) => {
+  // Implémentation fictive pour résoudre l'erreur d'importation
+  return [];
+};
+
+export { updatePoliticalIndicators };
