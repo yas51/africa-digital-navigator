@@ -8,8 +8,8 @@ const updatePoliticalIndicators = async (countryCode: string) => {
     // Données spécifiques par pays pour les zones économiques et incitations fiscales
     const politicalDataByCountry: Record<string, any> = {
       'eg': { // Égypte
-        special_economic_zones: ['Zone de Suez', 'Parc technologique du Caire', 'Zone économique du canal de Suez'],
-        fiscal_incentives: ['Exonération pour investissements étrangers', 'Réduction d\'impôts pour startups', 'Incitations pour les énergies renouvelables'],
+        special_economic_zones: ['Zone économique du Canal de Suez', 'Parc technologique du Caire', 'Zone économique de Minya'],
+        fiscal_incentives: ['Exonération fiscale pour l\'investissement étranger', 'Incitations pour les énergies renouvelables', 'Réduction des droits de douane'],
       },
       'ma': { // Maroc
         special_economic_zones: ['Zone Franche de Tanger', 'Casablanca Finance City', 'Technopole d\'Oujda'],
@@ -54,24 +54,27 @@ const updatePoliticalIndicators = async (countryCode: string) => {
       console.log(`Aucune donnée spécifique trouvée pour le pays: ${countryCode}`);
     }
 
+    // Extraire les données spécifiques au pays ou utiliser des valeurs par défaut
+    const countrySpecificData = politicalDataByCountry[countryCode.toLowerCase()] || {
+      special_economic_zones: ['Aucune zone spéciale répertoriée'],
+      fiscal_incentives: ['Pas d\'incitations fiscales spécifiques répertoriées']
+    };
+
+    console.log(`Données spécifiques pour ${countryCode}:`, countrySpecificData);
+
     const politicalData = {
       political_stability_index: Math.random() * 100,
       contract_enforcement_score: 60 + Math.random() * 40,
       property_rights_score: 50 + Math.random() * 50,
       geopolitical_risk_score: Math.random() * 100,
       fiscal_transparency_score: Math.random() * 100,
-      ...(politicalDataByCountry[countryCode.toLowerCase()] || {
-        special_economic_zones: ['Aucune zone spéciale répertoriée'],
-        fiscal_incentives: ['Pas d\'incitations fiscales spécifiques répertoriées']
-      }),
+      special_economic_zones: countrySpecificData.special_economic_zones,
+      fiscal_incentives: countrySpecificData.fiscal_incentives,
       political_indicators_last_update: new Date().toISOString()
     };
 
     // Vérifier les données avant mise à jour
-    console.log(`Données à mettre à jour pour ${countryCode}:`, {
-      special_economic_zones: politicalData.special_economic_zones,
-      fiscal_incentives: politicalData.fiscal_incentives
-    });
+    console.log(`Données à mettre à jour pour ${countryCode}:`, politicalData);
 
     const { error } = await supabase
       .from('countries')
@@ -83,8 +86,11 @@ const updatePoliticalIndicators = async (countryCode: string) => {
     } else {
       console.log(`Indicateurs politiques mis à jour avec succès pour: ${countryCode}`);
     }
+    
+    return true;
   } catch (error) {
     console.error('Erreur lors de la mise à jour des données politiques:', error);
+    return false;
   }
 };
 

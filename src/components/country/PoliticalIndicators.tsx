@@ -23,6 +23,12 @@ interface PoliticalIndicatorsProps {
 }
 
 const PoliticalIndicators = ({ country }: PoliticalIndicatorsProps) => {
+  // Vérification des données pour le débogage
+  console.log("PoliticalIndicators - Données du pays:", country.id, {
+    special_economic_zones: country.special_economic_zones,
+    fiscal_incentives: country.fiscal_incentives
+  });
+
   const radarData = [
     {
       subject: 'Stabilité Politique',
@@ -83,16 +89,24 @@ const PoliticalIndicators = ({ country }: PoliticalIndicatorsProps) => {
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">Zones Économiques Spéciales</h3>
             <ul className="list-disc pl-5 space-y-2">
-              {country.special_economic_zones?.map((zone, index) => (
-                <li key={index}>{zone}</li>
-              )) || <li>Information non disponible</li>}
+              {Array.isArray(country.special_economic_zones) && country.special_economic_zones.length > 0 ? (
+                country.special_economic_zones.map((zone, index) => (
+                  <li key={index}>{zone}</li>
+                ))
+              ) : (
+                <li>Information non disponible</li>
+              )}
             </ul>
 
-            <h3 className="font-semibold text-lg mt-4">Incitations Fiscales</h3>
+            <h3 className="font-semibold text-lg">Incitations Fiscales</h3>
             <ul className="list-disc pl-5 space-y-2">
-              {country.fiscal_incentives?.map((incentive, index) => (
-                <li key={index}>{incentive}</li>
-              )) || <li>Information non disponible</li>}
+              {Array.isArray(country.fiscal_incentives) && country.fiscal_incentives.length > 0 ? (
+                country.fiscal_incentives.map((incentive, index) => (
+                  <li key={index}>{incentive}</li>
+                ))
+              ) : (
+                <li>Pas d'incitations fiscales spécifiques répertoriées</li>
+              )}
             </ul>
 
             <div className="mt-4 text-sm text-gray-500">
