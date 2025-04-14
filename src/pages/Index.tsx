@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -151,10 +150,10 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
               <div className="space-y-4">
                 <h1 className="text-3xl md:text-5xl font-bold tracking-tighter">
-                  Africa Digital Navigator
+                  YOA DIGITAL ANALYZER - SAAS
                 </h1>
                 <p className="text-lg md:text-xl text-white/90 max-w-[600px]">
-                  Plateforme d'analyse décisionnelle pour l'implantation et la transformation digitale en Afrique.
+                  Plateforme d'analyse décisionnelle pour l'implantation et la transformation digitale.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button 
@@ -332,7 +331,7 @@ const Index = () => {
               
               <TabsContent value="overview" className="space-y-4">
                 <div className="text-center max-w-2xl mx-auto space-y-4">
-                  <h2 className="text-2xl font-bold">Bienvenue sur Africa Digital Navigator</h2>
+                  <h2 className="text-2xl font-bold">Bienvenue sur YOA DIGITAL ANALYZER - SAAS</h2>
                   <p className="text-muted-foreground">
                     Choisissez un module pour commencer votre analyse stratégique pour l'implantation 
                     et la transformation digitale en Afrique.

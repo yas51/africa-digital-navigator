@@ -11,10 +11,10 @@ const Footer = () => {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Globe2 className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold text-primary">Africa Digital Navigator</span>
+              <span className="text-xl font-bold text-primary">YOA DIGITAL ANALYZER - SAAS</span>
             </div>
             <p className="text-sm text-gray-600 mb-4">
-              Plateforme stratégique pour l'installation et la transformation digitale en Afrique.
+              Plateforme stratégique pour l'installation et la transformation digitale.
             </p>
           </div>
           
@@ -69,7 +69,7 @@ const Footer = () => {
         
         <div className="border-t border-gray-200 mt-8 pt-6">
           <p className="text-sm text-center text-gray-500">
-            © {new Date().getFullYear()} Africa Digital Navigator. Tous droits réservés.
+            © {new Date().getFullYear()} YOA DIGITAL ANALYZER - SAAS. Tous droits réservés.
           </p>
         </div>
       </div>
