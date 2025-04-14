@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import type { CountryData } from '@/data/countriesData';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,6 +10,7 @@ import DigitalOverview from './country/DigitalOverview';
 import EconomicIndicators from './country/EconomicIndicators';
 import BalanceIndicators from './country/BalanceIndicators';
 import UpdateInfo from './country/UpdateInfo';
+import EconomicChart from './country/EconomicChart';
 
 interface CountryDetailsProps {
   country: CountryData;
@@ -75,13 +75,16 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
   }, [country, toast]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <GeneralInfo country={updatedCountry} />
-      <EconomicOverview country={updatedCountry} />
-      <DigitalOverview country={updatedCountry} />
-      <EconomicIndicators country={updatedCountry} />
-      <BalanceIndicators country={updatedCountry} />
-      <UpdateInfo country={updatedCountry} />
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <GeneralInfo country={updatedCountry} />
+        <EconomicOverview country={updatedCountry} />
+        <DigitalOverview country={updatedCountry} />
+        <EconomicIndicators country={updatedCountry} />
+        <BalanceIndicators country={updatedCountry} />
+        <UpdateInfo country={updatedCountry} />
+      </div>
+      <EconomicChart country={updatedCountry} />
     </div>
   );
 };
