@@ -26,7 +26,7 @@ const PoliticalIndicators = ({ country }: PoliticalIndicatorsProps) => {
   const radarData = [
     {
       subject: 'Stabilité Politique',
-      value: country.political_stability_index || 0,
+      value: country.political_stability_index || country.politicalStability || 0,
       fullMark: 100,
     },
     {
@@ -85,14 +85,14 @@ const PoliticalIndicators = ({ country }: PoliticalIndicatorsProps) => {
             <ul className="list-disc pl-5 space-y-2">
               {country.special_economic_zones?.map((zone, index) => (
                 <li key={index}>{zone}</li>
-              ))}
+              )) || <li>Information non disponible</li>}
             </ul>
 
             <h3 className="font-semibold text-lg mt-4">Incitations Fiscales</h3>
             <ul className="list-disc pl-5 space-y-2">
               {country.fiscal_incentives?.map((incentive, index) => (
                 <li key={index}>{incentive}</li>
-              ))}
+              )) || <li>Information non disponible</li>}
             </ul>
 
             <div className="mt-4 text-sm text-gray-500">

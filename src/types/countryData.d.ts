@@ -20,5 +20,14 @@ declare module '@/data/countriesData' {
     trade_balance?: number;
     exchange_rate_volatility?: number;
     last_real_time_update?: string;
+    // Nouveaux indicateurs politiques
+    political_stability_index?: number;
+    contract_enforcement_score?: number;
+    property_rights_score?: number;
+    geopolitical_risk_score?: number;
+    fiscal_transparency_score?: number;
+    special_economic_zones?: string[];
+    fiscal_incentives?: string[];
+    political_indicators_last_update?: string;
   }
 }
