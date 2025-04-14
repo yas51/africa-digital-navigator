@@ -12,6 +12,8 @@ import {
 import { getCountryById } from '@/data/countriesData';
 import { getSectorOpportunities } from '@/data/indicators';
 import type { CompanyAssessment } from './CompanyAssessmentForm';
+import type jsPDF from 'jspdf';
+import type html2canvas from 'html2canvas';
 
 interface AnalysisDashboardProps {
   assessment: CompanyAssessment;
@@ -27,7 +29,6 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
   
   const sectorOpportunities = getSectorOpportunities(country.id);
   
-  // Calculate maturity level text
   const getMaturityLevel = (score: number): string => {
     if (score >= 80) return "Avancé";
     if (score >= 60) return "Intermédiaire Supérieur";
@@ -36,14 +37,12 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
     return "Embryonnaire";
   };
   
-  // Format category scores for radar chart
   const radarData = Object.entries(assessment.categoryScores).map(([key, value]) => ({
     subject: key,
     value: value,
     fullMark: 100,
   }));
   
-  // Generate recommendation phases
   const phases = [
     {
       title: "Phase 1: Mise à niveau",
@@ -80,7 +79,6 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
     }
   ];
   
-  // Gap analysis data
   const gapCategories = [
     {
       name: "Infrastructure",
@@ -124,17 +122,14 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
       const { default: jsPDF } = await import('jspdf');
       const { default: html2canvas } = await import('html2canvas');
       
-      // Create a new PDF document
       const doc = new jsPDF('p', 'mm', 'a4');
       
-      // Get the dashboard container
       const dashboardElement = document.getElementById('analysis-dashboard-content');
       
       if (!dashboardElement) {
         throw new Error("Dashboard element not found");
       }
       
-      // Add title and basic info
       doc.setFontSize(22);
       doc.text("Dashboard d'Analyse", 105, 20, { align: 'center' });
       
@@ -146,9 +141,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
       doc.text(`Score de Maturité: ${assessment.readinessScore}/100 (${getMaturityLevel(assessment.readinessScore)})`, 15, 50);
       doc.text(`Secteur: ${assessment.sector}`, 15, 60);
       
-      // Try to capture each section separately since the whole dashboard might be too big
       try {
-        // Capture the radar chart
         const radarElement = document.querySelector('.radar-chart-container');
         if (radarElement) {
           const radarCanvas = await html2canvas(radarElement as HTMLElement, {
@@ -160,7 +153,6 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
           doc.addImage(radarImg, 'PNG', 120, 70, 80, 80);
         }
         
-        // Capture the gap analysis chart
         const gapElement = document.querySelector('.gap-chart-container');
         if (gapElement) {
           const gapCanvas = await html2canvas(gapElement as HTMLElement, {
@@ -172,28 +164,8 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
           doc.addImage(gapImg, 'PNG', 10, 70, 100, 80);
         }
         
-        // Add roadmap info
         doc.text("Roadmap de Transformation Digitale", 15, 160);
         let yPos = 170;
-        
-        // Add phases
-        const phases = [
-          {
-            title: "Phase 1: Mise à niveau",
-            timeframe: "0-6 mois",
-            priority: assessment.readinessScore < 40 ? "Haute" : "Moyenne"
-          },
-          {
-            title: "Phase 2: Premiers projets IA",
-            timeframe: "6-18 mois",
-            priority: assessment.readinessScore >= 40 && assessment.readinessScore < 70 ? "Haute" : "Moyenne"
-          },
-          {
-            title: "Phase 3: IA avancée",
-            timeframe: "18-36 mois",
-            priority: assessment.readinessScore >= 70 ? "Haute" : "Basse"
-          }
-        ];
         
         phases.forEach(phase => {
           doc.setFontSize(11);
@@ -201,13 +173,11 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
           yPos += 8;
         });
         
-        // Add a second page for more detailed info
         doc.addPage();
         
         doc.setFontSize(16);
         doc.text("Détail des Recommandations", 105, 20, { align: 'center' });
         
-        // Add category scores detail
         doc.setFontSize(14);
         doc.text("Scores par Catégorie", 15, 40);
         
@@ -218,7 +188,6 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
           yPos += 8;
         });
         
-        // Add recommendations
         doc.setFontSize(14);
         doc.text("Recommandations Prioritaires", 15, yPos + 10);
         
@@ -239,7 +208,6 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
         console.error("Error capturing sections:", error);
       }
       
-      // Save the PDF
       doc.save(`analyse-${assessment.companyName.replace(/\s+/g, '-').toLowerCase()}.pdf`);
       
       toast({

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { BarChart3, Globe2, FileBarChart, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
+import type jsPDF from 'jspdf';
 
 interface HeaderProps {
   onTabChange?: (tab: string) => void;

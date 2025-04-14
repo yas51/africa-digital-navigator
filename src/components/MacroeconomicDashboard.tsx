@@ -7,6 +7,8 @@ import { Download, Share2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { getCountryById } from '@/data/countriesData';
 import { getSectorOpportunities } from '@/data/indicators';
+import type jsPDF from 'jspdf';
+import type html2canvas from 'html2canvas';
 
 interface MacroeconomicDashboardProps {
   countryId: string;

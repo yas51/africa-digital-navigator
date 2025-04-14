@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,6 +12,8 @@ import MacroeconomicDashboard from '@/components/MacroeconomicDashboard';
 import CompanyAssessmentForm, { CompanyAssessment } from '@/components/CompanyAssessmentForm';
 import AnalysisDashboard from '@/components/AnalysisDashboard';
 import { getTopCountriesByScore } from '@/data/countriesData';
+import type jsPDF from 'jspdf';
+import type html2canvas from 'html2canvas';
 
 const Index = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
