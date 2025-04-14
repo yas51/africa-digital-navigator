@@ -18,11 +18,11 @@ interface CountrySelectorProps {
 
 const CountrySelector: React.FC<CountrySelectorProps> = ({ onSelect }) => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
-  const [selectedRegion, setSelectedRegion] = useState<string>("");
+  const [selectedRegion, setSelectedRegion] = useState<string>("all-regions");
   
-  const filteredCountries = selectedRegion 
-    ? countriesData.filter(country => country.region === selectedRegion)
-    : countriesData;
+  const filteredCountries = selectedRegion === "all-regions"
+    ? countriesData
+    : countriesData.filter(country => country.region === selectedRegion);
 
   const handleCountryChange = (value: string) => {
     setSelectedCountry(value);
@@ -46,7 +46,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({ onSelect }) => {
               <SelectValue placeholder="Sélectionnez une région" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Toutes les régions</SelectItem>
+              <SelectItem value="all-regions">Toutes les régions</SelectItem>
               {regions.map(region => (
                 <SelectItem key={region} value={region}>{region}</SelectItem>
               ))}
