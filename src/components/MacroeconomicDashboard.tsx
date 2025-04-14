@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { Button } from "@/components/ui/button";
 import { Download, Share2 } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 import { getCountryById } from '@/data/countriesData';
 import { getSectorOpportunities } from '@/data/indicators';
 
@@ -14,6 +15,7 @@ interface MacroeconomicDashboardProps {
 const MacroeconomicDashboard: React.FC<MacroeconomicDashboardProps> = ({ countryId }) => {
   const country = getCountryById(countryId);
   const sectorOpportunities = getSectorOpportunities(countryId);
+  const { toast } = useToast();
 
   if (!country) {
     return <div className="text-center py-8">Sélectionnez un pays pour voir l'analyse</div>;
@@ -53,18 +55,84 @@ const MacroeconomicDashboard: React.FC<MacroeconomicDashboardProps> = ({ country
     },
   ];
 
+  const handleExportPDF = async () => {
+    toast({
+      title: "Export PDF en cours",
+      description: "Préparation du PDF...",
+    });
+    
+    try {
+      const { default: jsPDF } = await import('jspdf');
+      const { default: html2canvas } = await import('html2canvas');
+      
+      // Create a new PDF document
+      const doc = new jsPDF('p', 'mm', 'a4');
+      
+      // Get the dashboard container
+      const dashboardElement = document.getElementById('macroeconomic-dashboard');
+      
+      if (!dashboardElement) {
+        throw new Error("Dashboard element not found");
+      }
+      
+      // Convert the dashboard to canvas
+      const canvas = await html2canvas(dashboardElement, {
+        scale: 0.7, // Scale down to fit on PDF
+        useCORS: true, // To handle images from different origins
+        logging: false, // Disable logging
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      
+      // Add country details to PDF
+      doc.setFontSize(22);
+      doc.text(`Analyse Macroéconomique: ${country.name} ${country.flag}`, 15, 20);
+      
+      doc.setFontSize(12);
+      doc.text(`Généré le: ${new Date().toLocaleDateString()}`, 15, 30);
+      doc.text(`Opportunité Pays: ${country.opportunityScore}/100`, 15, 40);
+      doc.text(`Croissance PIB: ${country.gdpGrowth}%`, 15, 50);
+      doc.text(`Pénétration Internet: ${country.internetPenetration}%`, 15, 60);
+      
+      // Add the dashboard image
+      doc.addImage(imgData, 'PNG', 10, 70, 190, 180);
+      
+      // Save the PDF
+      doc.save(`analyse-macroeconomique-${country.name}.pdf`);
+      
+      toast({
+        title: "Export réussi",
+        description: "Le PDF a été généré et téléchargé avec succès.",
+      });
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+      toast({
+        title: "Erreur d'export",
+        description: "Une erreur est survenue lors de la génération du PDF.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleShare = () => {
+    toast({
+      title: "Partage",
+      description: "Fonctionnalité de partage en cours de développement.",
+    });
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" id="macroeconomic-dashboard">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">
           {country.flag} {country.name}: Analyse Macroéconomique
         </h2>
         <div className="flex space-x-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExportPDF}>
             <Download className="mr-2 h-4 w-4" />
             Exporter PDF
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleShare}>
             <Share2 className="mr-2 h-4 w-4" />
             Partager
           </Button>

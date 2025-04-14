@@ -47,12 +47,78 @@ const Index = () => {
     });
   };
   
-  const handleDownloadReport = () => {
+  const handleDownloadReport = async () => {
     if (assessment) {
       toast({
-        title: "Rapport généré",
-        description: "Votre rapport de diagnostic est en cours de téléchargement.",
+        title: "Génération du rapport",
+        description: "Votre rapport de diagnostic est en cours de préparation.",
       });
+      
+      try {
+        const { default: jsPDF } = await import('jspdf');
+        const { default: html2canvas } = await import('html2canvas');
+        
+        const doc = new jsPDF('p', 'mm', 'a4');
+        
+        doc.setFontSize(22);
+        doc.text("Rapport de Diagnostic Entreprise", 105, 20, { align: 'center' });
+        
+        doc.setFontSize(16);
+        doc.text(`${assessment.companyName}`, 105, 30, { align: 'center' });
+        
+        doc.setFontSize(12);
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 40);
+        doc.text(`Secteur: ${assessment.sector}`, 20, 50);
+        doc.text(`Taille: ${assessment.size}`, 20, 60);
+        doc.text(`Score de Maturité Digitale: ${assessment.readinessScore}/100`, 20, 70);
+        
+        doc.text("Scores par Catégorie:", 20, 85);
+        let yPos = 95;
+        Object.entries(assessment.categoryScores).forEach(([category, score]) => {
+          doc.text(`${category}: ${score}/100`, 25, yPos);
+          yPos += 8;
+        });
+        
+        doc.text("Compétences Digitales:", 20, yPos);
+        yPos += 10;
+        assessment.skills.forEach(skill => {
+          doc.text(`- ${skill}`, 25, yPos);
+          yPos += 8;
+        });
+        
+        const dashboardElement = document.getElementById('analysis-dashboard');
+        if (dashboardElement) {
+          try {
+            const canvas = await html2canvas(dashboardElement, {
+              scale: 0.5,
+              useCORS: true,
+              logging: false,
+            });
+            
+            doc.addPage();
+            doc.text("Tableau de Bord d'Analyse", 105, 20, { align: 'center' });
+            
+            const imgData = canvas.toDataURL('image/png');
+            doc.addImage(imgData, 'PNG', 10, 30, 190, 230);
+          } catch (error) {
+            console.error("Error capturing dashboard:", error);
+          }
+        }
+        
+        doc.save(`diagnostic-${assessment.companyName.replace(/\s+/g, '-').toLowerCase()}.pdf`);
+        
+        toast({
+          title: "Rapport généré",
+          description: "Votre rapport de diagnostic a été téléchargé avec succès.",
+        });
+      } catch (error) {
+        console.error("Error generating report:", error);
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de la génération du rapport.",
+          variant: "destructive",
+        });
+      }
     } else {
       toast({
         title: "Erreur",
@@ -77,7 +143,6 @@ const Index = () => {
       <Header onTabChange={handleTabChange} />
       
       <main className="flex-1">
-        {/* Hero Section */}
         <section className="hero-gradient text-white py-12 md:py-24">
           <div className="container px-4 md:px-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
@@ -119,7 +184,6 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Features Section */}
         <section className="py-12 bg-gray-50">
           <div className="container px-4 md:px-6">
             <div className="text-center mb-8">
@@ -193,7 +257,6 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Top Countries Section */}
         <section className="py-12">
           <div className="container px-4 md:px-6">
             <div className="text-center mb-8">
@@ -255,7 +318,6 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Main Tabs Section */}
         <section className="py-12 bg-gray-50" id="main-content">
           <div className="container px-4 md:px-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

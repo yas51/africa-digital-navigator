@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Download, Share2, FileText, BarChart3, Clock, Database, Server, Code } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 import { 
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend
@@ -19,6 +19,7 @@ interface AnalysisDashboardProps {
 
 const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => {
   const country = getCountryById(assessment.countryId);
+  const { toast } = useToast();
   
   if (!country) {
     return <div className="text-center py-8">Données pays manquantes</div>;
@@ -113,8 +114,157 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
     }
   ];
   
+  const handleExportPDF = async () => {
+    toast({
+      title: "Export PDF en cours",
+      description: "Préparation du PDF d'analyse...",
+    });
+    
+    try {
+      const { default: jsPDF } = await import('jspdf');
+      const { default: html2canvas } = await import('html2canvas');
+      
+      // Create a new PDF document
+      const doc = new jsPDF('p', 'mm', 'a4');
+      
+      // Get the dashboard container
+      const dashboardElement = document.getElementById('analysis-dashboard-content');
+      
+      if (!dashboardElement) {
+        throw new Error("Dashboard element not found");
+      }
+      
+      // Add title and basic info
+      doc.setFontSize(22);
+      doc.text("Dashboard d'Analyse", 105, 20, { align: 'center' });
+      
+      doc.setFontSize(16);
+      doc.text(`${assessment.companyName} - ${country.name} ${country.flag}`, 105, 30, { align: 'center' });
+      
+      doc.setFontSize(12);
+      doc.text(`Généré le: ${new Date().toLocaleDateString()}`, 15, 40);
+      doc.text(`Score de Maturité: ${assessment.readinessScore}/100 (${getMaturityLevel(assessment.readinessScore)})`, 15, 50);
+      doc.text(`Secteur: ${assessment.sector}`, 15, 60);
+      
+      // Try to capture each section separately since the whole dashboard might be too big
+      try {
+        // Capture the radar chart
+        const radarElement = document.querySelector('.radar-chart-container');
+        if (radarElement) {
+          const radarCanvas = await html2canvas(radarElement as HTMLElement, {
+            scale: 0.7,
+            useCORS: true,
+          });
+          
+          const radarImg = radarCanvas.toDataURL('image/png');
+          doc.addImage(radarImg, 'PNG', 120, 70, 80, 80);
+        }
+        
+        // Capture the gap analysis chart
+        const gapElement = document.querySelector('.gap-chart-container');
+        if (gapElement) {
+          const gapCanvas = await html2canvas(gapElement as HTMLElement, {
+            scale: 0.7,
+            useCORS: true,
+          });
+          
+          const gapImg = gapCanvas.toDataURL('image/png');
+          doc.addImage(gapImg, 'PNG', 10, 70, 100, 80);
+        }
+        
+        // Add roadmap info
+        doc.text("Roadmap de Transformation Digitale", 15, 160);
+        let yPos = 170;
+        
+        // Add phases
+        const phases = [
+          {
+            title: "Phase 1: Mise à niveau",
+            timeframe: "0-6 mois",
+            priority: assessment.readinessScore < 40 ? "Haute" : "Moyenne"
+          },
+          {
+            title: "Phase 2: Premiers projets IA",
+            timeframe: "6-18 mois",
+            priority: assessment.readinessScore >= 40 && assessment.readinessScore < 70 ? "Haute" : "Moyenne"
+          },
+          {
+            title: "Phase 3: IA avancée",
+            timeframe: "18-36 mois",
+            priority: assessment.readinessScore >= 70 ? "Haute" : "Basse"
+          }
+        ];
+        
+        phases.forEach(phase => {
+          doc.setFontSize(11);
+          doc.text(`${phase.title} (${phase.timeframe}) - Priorité: ${phase.priority}`, 20, yPos);
+          yPos += 8;
+        });
+        
+        // Add a second page for more detailed info
+        doc.addPage();
+        
+        doc.setFontSize(16);
+        doc.text("Détail des Recommandations", 105, 20, { align: 'center' });
+        
+        // Add category scores detail
+        doc.setFontSize(14);
+        doc.text("Scores par Catégorie", 15, 40);
+        
+        doc.setFontSize(11);
+        yPos = 50;
+        Object.entries(assessment.categoryScores).forEach(([category, score]) => {
+          doc.text(`${category}: ${score}/100`, 20, yPos);
+          yPos += 8;
+        });
+        
+        // Add recommendations
+        doc.setFontSize(14);
+        doc.text("Recommandations Prioritaires", 15, yPos + 10);
+        
+        const recommendations = [
+          "Stratégie Données: Développer une stratégie de collecte et gestion des données",
+          "Tableau de Bord Analytique: Implémentation d'un tableau de bord d'analyse",
+          "Infrastructure Cloud: Migration progressive vers une infrastructure cloud",
+          "Formation et Recrutement: Développer un plan de formation pour les équipes"
+        ];
+        
+        doc.setFontSize(11);
+        yPos += 20;
+        recommendations.forEach(rec => {
+          doc.text(`- ${rec}`, 20, yPos);
+          yPos += 8;
+        });
+      } catch (error) {
+        console.error("Error capturing sections:", error);
+      }
+      
+      // Save the PDF
+      doc.save(`analyse-${assessment.companyName.replace(/\s+/g, '-').toLowerCase()}.pdf`);
+      
+      toast({
+        title: "Export réussi",
+        description: "Le PDF d'analyse a été généré et téléchargé avec succès.",
+      });
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+      toast({
+        title: "Erreur d'export",
+        description: "Une erreur est survenue lors de la génération du PDF.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleShare = () => {
+    toast({
+      title: "Partage",
+      description: "Fonctionnalité de partage en cours de développement.",
+    });
+  };
+  
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" id="analysis-dashboard-content">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Rapport d'Analyse</h2>
@@ -123,11 +273,11 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
           </p>
         </div>
         <div className="flex space-x-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExportPDF}>
             <Download className="mr-2 h-4 w-4" />
             Exporter PDF
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleShare}>
             <Share2 className="mr-2 h-4 w-4" />
             Partager
           </Button>
@@ -193,7 +343,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
             <CardDescription>Écart entre le niveau actuel et les objectifs stratégiques</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-80">
+            <div className="h-80 gap-chart-container">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={gapCategories}
@@ -218,7 +368,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ assessment }) => 
             <CardDescription>Analyse par catégorie</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-80">
+            <div className="h-80 radar-chart-container">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart outerRadius={90} data={radarData}>
                   <PolarGrid />

@@ -3,17 +3,63 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { BarChart3, Globe2, FileBarChart, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useToast } from "@/hooks/use-toast";
 
 interface HeaderProps {
   onTabChange?: (tab: string) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ onTabChange }) => {
+  const { toast } = useToast();
+  
   const handleTabClick = (tab: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     if (onTabChange) {
       onTabChange(tab);
     }
+  };
+  
+  const handleReportsClick = () => {
+    toast({
+      title: "Rapports",
+      description: "La génération de rapports a été lancée.",
+    });
+    
+    // Generate a simple report PDF
+    const generatePDF = async () => {
+      try {
+        const { default: jsPDF } = await import('jspdf');
+        const doc = new jsPDF();
+        
+        doc.setFontSize(22);
+        doc.text("Africa Digital Navigator", 105, 20, { align: 'center' });
+        
+        doc.setFontSize(16);
+        doc.text("Rapport d'analyse", 105, 30, { align: 'center' });
+        
+        doc.setFontSize(12);
+        doc.text("Date: " + new Date().toLocaleDateString(), 20, 50);
+        doc.text("Ce rapport présente une analyse des opportunités digitales en Afrique.", 20, 60);
+        doc.text("Pour plus de détails, veuillez consulter le tableau de bord complet.", 20, 70);
+        
+        // Save the PDF
+        doc.save("africa-digital-navigator-rapport.pdf");
+        
+        toast({
+          title: "Rapport généré",
+          description: "Le rapport a été téléchargé avec succès.",
+        });
+      } catch (error) {
+        console.error("Error generating PDF:", error);
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de la génération du rapport.",
+          variant: "destructive",
+        });
+      }
+    };
+    
+    generatePDF();
   };
 
   return (
@@ -54,7 +100,12 @@ const Header: React.FC<HeaderProps> = ({ onTabChange }) => {
           </a>
         </nav>
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" className="hidden md:flex">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="hidden md:flex"
+            onClick={handleReportsClick}
+          >
             <FileBarChart className="mr-2 h-4 w-4" />
             Rapports
           </Button>
