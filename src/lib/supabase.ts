@@ -139,3 +139,48 @@ export const startPeriodicUpdates = (intervalMinutes: number = 60) => {
   // Retourner une fonction pour arrêter les mises à jour
   return () => clearInterval(interval);
 };
+
+export const cleanupCountryDuplicates = async (): Promise<void> => {
+  const { data: countries, error: fetchError } = await supabase
+    .from('countries')
+    .select('*');
+
+  if (fetchError) {
+    console.error('Erreur lors de la récupération des pays:', fetchError);
+    return;
+  }
+
+  const uniqueCountries = countries?.reduce((acc, country) => {
+    const existingCountry = acc.find(c => 
+      c.name.toLowerCase() === country.name.toLowerCase()
+    );
+
+    if (!existingCountry) {
+      acc.push(country);
+    }
+
+    return acc;
+  }, [] as CountryData[]);
+
+  if (uniqueCountries) {
+    // Supprimer tous les pays existants
+    const { error: deleteError } = await supabase
+      .from('countries')
+      .delete()
+      .neq('id', '');
+
+    if (deleteError) {
+      console.error('Erreur lors de la suppression des pays:', deleteError);
+      return;
+    }
+
+    // Insérer les pays uniques
+    const { error: insertError } = await supabase
+      .from('countries')
+      .upsert(uniqueCountries);
+
+    if (insertError) {
+      console.error('Erreur lors de l\'insertion des pays uniques:', insertError);
+    }
+  }
+};
