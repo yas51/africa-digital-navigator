@@ -9,6 +9,69 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      countries: {
+        Row: {
+          corruptionIndex: number
+          doingBusinessRank: number
+          education: number
+          fdiInflow: number
+          flag: string
+          gdp: number
+          gdpGrowth: number
+          hdi: number
+          id: string
+          internetPenetration: number
+          logisticsIndex: number
+          mobilePenetration: number
+          name: string
+          officialLanguages: string[]
+          opportunityScore: number
+          politicalStability: number
+          population: number
+          region: string
+        }
+        Insert: {
+          corruptionIndex: number
+          doingBusinessRank: number
+          education: number
+          fdiInflow: number
+          flag: string
+          gdp: number
+          gdpGrowth: number
+          hdi: number
+          id: string
+          internetPenetration: number
+          logisticsIndex: number
+          mobilePenetration: number
+          name: string
+          officialLanguages: string[]
+          opportunityScore: number
+          politicalStability: number
+          population: number
+          region: string
+        }
+        Update: {
+          corruptionIndex?: number
+          doingBusinessRank?: number
+          education?: number
+          fdiInflow?: number
+          flag?: string
+          gdp?: number
+          gdpGrowth?: number
+          hdi?: number
+          id?: string
+          internetPenetration?: number
+          logisticsIndex?: number
+          mobilePenetration?: number
+          name?: string
+          officialLanguages?: string[]
+          opportunityScore?: number
+          politicalStability?: number
+          population?: number
+          region?: string
+        }
+        Relationships: []
+      }
       discussion_messages: {
         Row: {
           content: string

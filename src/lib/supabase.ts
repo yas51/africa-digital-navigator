@@ -5,7 +5,8 @@ import type { CountryData } from '@/data/countriesData';
 export const fetchCountries = async (): Promise<CountryData[]> => {
   const { data, error } = await supabase
     .from('countries')
-    .select('*');
+    .select('*')
+    .returns<CountryData[]>();
   
   if (error) {
     console.error('Error fetching countries:', error);
@@ -20,12 +21,12 @@ export const fetchCountryById = async (id: string): Promise<CountryData | null> 
     .from('countries')
     .select('*')
     .eq('id', id)
+    .returns<CountryData>()
     .single();
   
   if (error) {
     console.error(`Error fetching country with id ${id}:`, error);
     if (error.code === 'PGRST116') {
-      // PGRST116 est le code pour "No rows found"
       return null;
     }
     throw error;
@@ -38,7 +39,8 @@ export const fetchCountriesByRegion = async (region: string): Promise<CountryDat
   const { data, error } = await supabase
     .from('countries')
     .select('*')
-    .eq('region', region);
+    .eq('region', region)
+    .returns<CountryData[]>();
   
   if (error) {
     console.error(`Error fetching countries in region ${region}:`, error);
@@ -53,7 +55,8 @@ export const fetchTopCountriesByScore = async (count: number = 5): Promise<Count
     .from('countries')
     .select('*')
     .order('opportunityScore', { ascending: false })
-    .limit(count);
+    .limit(count)
+    .returns<CountryData[]>();
   
   if (error) {
     console.error('Error fetching top countries:', error);
@@ -63,7 +66,6 @@ export const fetchTopCountriesByScore = async (count: number = 5): Promise<Count
   return data || [];
 };
 
-// Fonction pour abonner un composant aux mises à jour en temps réel
 export const subscribeToCountryUpdates = (callback: (countries: CountryData[]) => void) => {
   const subscription = supabase
     .channel('countries_updates')
