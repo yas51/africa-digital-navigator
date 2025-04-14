@@ -29,6 +29,16 @@ export type Database = {
           politicalStability: number
           population: number
           region: string
+          wb_ease_business_score: number | null
+          wb_fdi_net_inflows: number | null
+          wb_gini_index: number | null
+          wb_high_tech_exports: number | null
+          wb_internet_users_percent: number | null
+          wb_last_updated: string | null
+          wb_mobile_subscriptions: number | null
+          wb_poverty_ratio: number | null
+          wb_research_expenditure: number | null
+          wb_trade_percentage: number | null
         }
         Insert: {
           corruptionIndex: number
@@ -49,6 +59,16 @@ export type Database = {
           politicalStability: number
           population: number
           region: string
+          wb_ease_business_score?: number | null
+          wb_fdi_net_inflows?: number | null
+          wb_gini_index?: number | null
+          wb_high_tech_exports?: number | null
+          wb_internet_users_percent?: number | null
+          wb_last_updated?: string | null
+          wb_mobile_subscriptions?: number | null
+          wb_poverty_ratio?: number | null
+          wb_research_expenditure?: number | null
+          wb_trade_percentage?: number | null
         }
         Update: {
           corruptionIndex?: number
@@ -69,6 +89,16 @@ export type Database = {
           politicalStability?: number
           population?: number
           region?: string
+          wb_ease_business_score?: number | null
+          wb_fdi_net_inflows?: number | null
+          wb_gini_index?: number | null
+          wb_high_tech_exports?: number | null
+          wb_internet_users_percent?: number | null
+          wb_last_updated?: string | null
+          wb_mobile_subscriptions?: number | null
+          wb_poverty_ratio?: number | null
+          wb_research_expenditure?: number | null
+          wb_trade_percentage?: number | null
         }
         Relationships: []
       }

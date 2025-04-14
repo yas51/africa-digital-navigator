@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import type { CountryData } from '@/data/countriesData';
 import { fetchWorldBankData, fetchUNData } from './externalApis';
