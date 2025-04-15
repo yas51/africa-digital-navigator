@@ -1,8 +1,10 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import type { CountryData } from '@/data/countriesData';
 
-export const setupRealtimeUpdates = () => {
-  // Configurer un canal de mise à jour en temps réel
+// Setup real-time updates function
+export const setupRealtimeUpdates = (callback: (updatedCountries: CountryData[]) => void) => {
+  // Configure a real-time update channel
   const channel = supabase
     .channel('countries_realtime')
     .on(
@@ -12,14 +14,127 @@ export const setupRealtimeUpdates = () => {
         schema: 'public', 
         table: 'countries' 
       },
-      (payload) => {
-        console.log('Mise à jour en temps réel :', payload);
-        // Vous pouvez ajouter une logique pour gérer différents types de changements
+      async (payload) => {
+        console.log('Real-time update:', payload);
+        
+        // After receiving an update, fetch the latest data
+        const { data: countries } = await supabase
+          .from('countries')
+          .select('*')
+          .order('name');
+        
+        // Call the callback with the updated countries
+        if (countries) {
+          callback(countries as CountryData[]);
+        }
       }
     )
     .subscribe();
 
   return () => {
     supabase.removeChannel(channel);
+  };
+};
+
+// Fetch all countries
+export const fetchCountries = async (): Promise<CountryData[]> => {
+  const { data, error } = await supabase
+    .from('countries')
+    .select('*')
+    .order('name');
+  
+  if (error) {
+    console.error('Error fetching countries:', error);
+    throw error;
+  }
+  
+  return data as CountryData[];
+};
+
+// Fetch top countries by opportunity score
+export const fetchTopCountriesByScore = async (limit: number = 5): Promise<CountryData[]> => {
+  const { data, error } = await supabase
+    .from('countries')
+    .select('*')
+    .order('opportunityScore', { ascending: false })
+    .limit(limit);
+  
+  if (error) {
+    console.error('Error fetching top countries:', error);
+    throw error;
+  }
+  
+  return data as CountryData[];
+};
+
+// Fetch a country by ID
+export const fetchCountryById = async (id: string): Promise<CountryData | null> => {
+  if (!id) return null;
+  
+  const { data, error } = await supabase
+    .from('countries')
+    .select('*')
+    .eq('id', id)
+    .single();
+  
+  if (error) {
+    console.error('Error fetching country by ID:', error);
+    return null;
+  }
+  
+  return data as CountryData;
+};
+
+// Update country with external data
+export const updateCountryWithExternalData = async (countryId: string): Promise<boolean> => {
+  try {
+    // Simulate updating country with external data
+    console.log(`Updating country ${countryId} with external data`);
+    
+    // Here we would normally fetch external data and update the country
+    // For now, we'll just update the last updated timestamp
+    const { data, error } = await supabase
+      .from('countries')
+      .update({ wb_last_updated: new Date().toISOString() })
+      .eq('id', countryId);
+    
+    if (error) {
+      console.error('Error updating country with external data:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error in updateCountryWithExternalData:', error);
+    return false;
+  }
+};
+
+// Subscribe to country updates
+export const subscribeToCountryUpdates = (callback: (updatedCountries: CountryData[]) => void) => {
+  return setupRealtimeUpdates(callback);
+};
+
+// Start periodic updates
+export const startPeriodicUpdates = (intervalInSeconds: number = 60) => {
+  // Set up a timer to periodically check for updates
+  const intervalId = setInterval(async () => {
+    try {
+      console.log('Checking for updates...');
+      const { data: countries } = await supabase
+        .from('countries')
+        .select('*')
+        .order('name');
+      
+      // Here we would normally update the countries with the latest data
+      console.log(`Got ${countries?.length || 0} countries in periodic update`);
+    } catch (error) {
+      console.error('Error in periodic update:', error);
+    }
+  }, intervalInSeconds * 1000);
+  
+  // Return a function to stop the updates
+  return () => {
+    clearInterval(intervalId);
   };
 };
