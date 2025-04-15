@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Airport, Droplet, Factory, Fuel, Gauge, Power, Ship, Truck } from 'lucide-react';
+import { Droplet, Factory, Fuel, Gauge, Plane, Power, Ship, Truck } from 'lucide-react';
 import type { CountryData } from '@/data/countriesData';
 
 interface LogisticsInfrastructureProps {
@@ -47,7 +47,7 @@ const LogisticsInfrastructure: React.FC<LogisticsInfrastructureProps> = ({ count
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Airport className="h-4 w-4" />
+                  <Plane className="h-4 w-4" />
                   Aéroports
                 </div>
                 <span>{formatScore(country.airport_quality)}</span>

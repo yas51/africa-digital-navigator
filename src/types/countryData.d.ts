@@ -1,4 +1,5 @@
 
+
 import { CountryData } from '@/data/countriesData';
 
 // Étend le type CountryData de base pour inclure les propriétés Supabase supplémentaires
@@ -37,5 +38,18 @@ declare module '@/data/countriesData' {
     skilled_workforce_availability?: number;
     import_export_regulations?: number;
     business_climate_last_update?: string;
+    // Indicateurs logistiques et d'infrastructure
+    infrastructure_quality?: number;
+    road_quality?: number;
+    port_quality?: number;
+    airport_quality?: number;
+    energy_stability?: number;
+    electricity_cost?: number;
+    water_cost?: number;
+    fuel_cost?: number;
+    lpi_score?: number;
+    logistics_hubs?: string[];
+    infrastructure_last_update?: string;
   }
 }
+
