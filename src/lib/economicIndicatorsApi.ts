@@ -1,3 +1,4 @@
+
 // API pour récupérer les indicateurs économiques en temps réel
 
 /**
@@ -122,6 +123,132 @@ const getRealisticCountryData = (countryCode: string) => {
       public_debt_gdp: 73.3,
       trade_balance: -12.6,
       exchange_rate_volatility: 0.9,
+    },
+    // Togo
+    "tg": {
+      current_inflation: 3.7,
+      exchange_rate: 655.9, // Franc CFA
+      unemployment_rate: 3.9,
+      public_debt_gdp: 58.3,
+      trade_balance: -4.2,
+      exchange_rate_volatility: 0.4,
+    },
+    // Bénin
+    "bj": {
+      current_inflation: 2.9,
+      exchange_rate: 655.9, // Franc CFA
+      unemployment_rate: 2.3,
+      public_debt_gdp: 46.1,
+      trade_balance: -3.5,
+      exchange_rate_volatility: 0.4,
+    },
+    // Burkina Faso
+    "bf": {
+      current_inflation: 4.3,
+      exchange_rate: 655.9, // Franc CFA
+      unemployment_rate: 6.1,
+      public_debt_gdp: 53.8,
+      trade_balance: -1.8,
+      exchange_rate_volatility: 0.5,
+    },
+    // Mali
+    "ml": {
+      current_inflation: 4.1,
+      exchange_rate: 655.9, // Franc CFA
+      unemployment_rate: 7.5,
+      public_debt_gdp: 49.2,
+      trade_balance: -2.9,
+      exchange_rate_volatility: 0.6,
+    },
+    // Niger
+    "ne": {
+      current_inflation: 3.8,
+      exchange_rate: 655.9, // Franc CFA
+      unemployment_rate: 7.9,
+      public_debt_gdp: 51.7,
+      trade_balance: -5.4,
+      exchange_rate_volatility: 0.6,
+    },
+    // Cameroun
+    "cm": {
+      current_inflation: 6.3,
+      exchange_rate: 655.9, // Franc CFA
+      unemployment_rate: 3.6,
+      public_debt_gdp: 45.2,
+      trade_balance: -2.8,
+      exchange_rate_volatility: 0.6,
+    },
+    // Tanzanie
+    "tz": {
+      current_inflation: 3.5,
+      exchange_rate: 2510.0, 
+      unemployment_rate: 2.2,
+      public_debt_gdp: 40.5,
+      trade_balance: -3.1,
+      exchange_rate_volatility: 1.2,
+    },
+    // Ouganda
+    "ug": {
+      current_inflation: 5.8,
+      exchange_rate: 3740.0,
+      unemployment_rate: 2.8,
+      public_debt_gdp: 52.6,
+      trade_balance: -6.3,
+      exchange_rate_volatility: 1.5,
+    },
+    // Éthiopie
+    "et": {
+      current_inflation: 32.5,
+      exchange_rate: 56.5,
+      unemployment_rate: 3.7,
+      public_debt_gdp: 35.8,
+      trade_balance: -4.5,
+      exchange_rate_volatility: 2.8,
+    },
+    // Sénégal
+    "sn": {
+      current_inflation: 3.6,
+      exchange_rate: 655.9, // Franc CFA
+      unemployment_rate: 7.1,
+      public_debt_gdp: 64.2,
+      trade_balance: -9.8,
+      exchange_rate_volatility: 0.5,
+    },
+    // Mozambique
+    "mz": {
+      current_inflation: 8.3,
+      exchange_rate: 63.8,
+      unemployment_rate: 3.4,
+      public_debt_gdp: 103.5,
+      trade_balance: -25.8,
+      exchange_rate_volatility: 1.9,
+    },
+    // Zambie
+    "zm": {
+      current_inflation: 9.8,
+      exchange_rate: 23.7,
+      unemployment_rate: 13.2,
+      public_debt_gdp: 98.7,
+      trade_balance: 1.7,
+      exchange_rate_volatility: 2.1,
+    },
+    // RD Congo
+    "cd": {
+      current_inflation: 13.2,
+      exchange_rate: 2485.0,
+      unemployment_rate: 4.5,
+      public_debt_gdp: 21.5,
+      trade_balance: 2.3,
+      exchange_rate_volatility: 3.2,
+    },
+    // Angola
+    "ao": {
+      current_inflation: 20.5,
+      exchange_rate: 832.0,
+      unemployment_rate: 34.5,
+      public_debt_gdp: 84.3,
+      trade_balance: 10.5,
+      exchange_rate_volatility: 2.7,
     }
   };
 

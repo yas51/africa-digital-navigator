@@ -54,6 +54,46 @@ const updatePoliticalIndicators = async (countryCode: string) => {
       'ml': { // Mali
         special_economic_zones: ['Zone Économique Spéciale de Bamako', 'Parc Industriel de Koulikoro', 'Zone Franche de Kayes'],
         fiscal_incentives: ['Exonération fiscale temporaire de 3 ans', 'Réductions douanières pour l\'équipement', 'Avantages pour l\'agro-industrie'],
+      },
+      'tg': { // Togo
+        special_economic_zones: ['Port Franc de Lomé', 'Zone Franche Industrielle de Lomé', 'Parc Industriel d\'Adétikopé'],
+        fiscal_incentives: ['Exonération d\'impôts sur 10 ans', 'Réduction des droits de douane', 'Avantages fiscaux pour les exportateurs'],
+      },
+      'bj': { // Bénin
+        special_economic_zones: ['Zone Économique Spéciale de Glo-Djigbé', 'Zone Franche Industrielle de Sèmè-Kpodji', 'Parc Agroalimentaire d\'Allada'],
+        fiscal_incentives: ['Exonération fiscale jusqu\'à 15 ans', 'Avantages douaniers', 'Incitations pour l\'investissement étranger'],
+      },
+      'bf': { // Burkina Faso
+        special_economic_zones: ['Zone Économique Spéciale de Ouagadougou', 'Zone Industrielle de Bobo-Dioulasso', 'Parc d\'Activités de Kossodo'],
+        fiscal_incentives: ['Exonération fiscale sur 7 ans', 'Réduction d\'impôts pour les PME', 'Avantages pour le secteur agricole'],
+      },
+      'cm': { // Cameroun
+        special_economic_zones: ['Zone Économique de Kribi', 'Zone Franche Industrielle de Douala', 'Technopole de Yaoundé'],
+        fiscal_incentives: ['Crédit d\'impôt pour l\'investissement', 'Exonérations fiscales sectorielles', 'Allègements douaniers'],
+      },
+      'ug': { // Ouganda
+        special_economic_zones: ['Kampala Industrial and Business Park', 'Namanve Industrial Park', 'Soroti Industrial Park'],
+        fiscal_incentives: ['Déductions fiscales pour l\'investissement', 'Exonération de TVA sur équipements', 'Allégements pour les exportateurs'],
+      },
+      'tz': { // Tanzanie
+        special_economic_zones: ['Bagamoyo Special Economic Zone', 'Benjamin William Mkapa SEZ', 'Mtwara Freeport Zone'],
+        fiscal_incentives: ['Exonération fiscale de 10 ans', 'Importation en franchise de droits', 'Réduction d\'impôt sur le revenu'],
+      },
+      'mz': { // Mozambique
+        special_economic_zones: ['Beluluane Industrial Park', 'Nacala Special Economic Zone', 'Mocuba Industrial Free Zone'],
+        fiscal_incentives: ['Réduction d\'impôt sur les sociétés', 'Exonération de droits d\'importation', 'Crédits fiscaux pour la formation'],
+      },
+      'zm': { // Zambie
+        special_economic_zones: ['Lusaka South Multi-Facility Economic Zone', 'Chambishi Multi-Facility Economic Zone', 'Lumwana Multi-Facility Economic Zone'],
+        fiscal_incentives: ['Exonération fiscale sur 5 ans', 'Déduction pour investissement', 'Allégements pour le secteur minier'],
+      },
+      'cd': { // RD Congo
+        special_economic_zones: ['Zone Économique Spéciale de Maluku', 'Kin-Malebo Special Economic Zone', 'Illebo Industrial Park'],
+        fiscal_incentives: ['Exonération fiscale temporaire', 'Réduction de l\'impôt sur le revenu', 'Avantages pour le secteur minier'],
+      },
+      'ao': { // Angola
+        special_economic_zones: ['Luanda-Bengo Special Economic Zone', 'Zona Franca do Lobito', 'Viana Industrial Park'],
+        fiscal_incentives: ['Taux d\'imposition réduit', 'Exemption des droits d\'importation', 'Avantages fiscaux pour l\'innovation'],
       }
     };
     
