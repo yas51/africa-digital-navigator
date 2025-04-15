@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -104,7 +103,6 @@ const BusinessClimateIndicators = ({ country }: BusinessClimateIndicatorsProps) 
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {indicators.map((indicator, index) => {
-            // Pour les indicateurs inversés (comme le délai de création où moins c'est mieux)
             const displayScore = indicator.inversed && indicator.value 
               ? Math.max(0, 100 - (indicator.value * 2)) 
               : indicator.value;
@@ -149,9 +147,7 @@ const BusinessClimateIndicators = ({ country }: BusinessClimateIndicatorsProps) 
                   
                   <Progress 
                     value={displayScore} 
-                    max={100} 
-                    className="h-2"
-                    indicatorClassName={scoreColor}
+                    className={`h-2 ${scoreColor}`}
                   />
                 </div>
               </div>
