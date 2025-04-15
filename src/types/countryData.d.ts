@@ -1,5 +1,4 @@
 
-
 import { CountryData } from '@/data/countriesData';
 
 // Étend le type CountryData de base pour inclure les propriétés Supabase supplémentaires
@@ -52,4 +51,3 @@ declare module '@/data/countriesData' {
     infrastructure_last_update?: string;
   }
 }
-

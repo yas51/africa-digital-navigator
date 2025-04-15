@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import type { CountryData } from '@/data/countriesData';
 import { supabase } from '@/integrations/supabase/client';
 import { updateCountryWithExternalData } from '@/lib/supabase';
 import { updateCountryEconomicData } from '@/services/economicDataService';
 import { updatePoliticalIndicators } from '@/lib/externalApis';
+import { updateCountryInfrastructureData } from '@/services/infrastructureDataService';
 import { useToast } from "@/hooks/use-toast";
 import GeneralInfo from './country/GeneralInfo';
 import EconomicOverview from './country/EconomicOverview';
@@ -15,7 +17,6 @@ import PoliticalIndicators from './country/PoliticalIndicators';
 import BusinessClimateIndicators from './country/BusinessClimateIndicators';
 import UpdateInfo from './country/UpdateInfo';
 import EconomicChart from './country/EconomicChart';
-import { fetchEconomicIndicators } from '@/services/economicDataService';
 import LogisticsInfrastructure from './country/LogisticsInfrastructure';
 
 interface CountryDetailsProps {
@@ -39,8 +40,9 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
           const updated = await updateCountryWithExternalData(country.id);
           const economicUpdated = await updateCountryEconomicData(country.id);
           const politicalUpdated = await updatePoliticalIndicators(country.id);
+          const infrastructureUpdated = await updateCountryInfrastructureData(country.id);
           
-          if (updated || economicUpdated || politicalUpdated) {
+          if (updated || economicUpdated || politicalUpdated || infrastructureUpdated) {
             const { data, error } = await supabase
               .from('countries')
               .select('*')
@@ -59,6 +61,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
         } else {
           await updateCountryEconomicData(country.id);
           await updatePoliticalIndicators(country.id);
+          await updateCountryInfrastructureData(country.id);
           
           const { data } = await supabase
             .from('countries')
