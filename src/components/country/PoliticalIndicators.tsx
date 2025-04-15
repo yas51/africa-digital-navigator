@@ -86,10 +86,27 @@ const PoliticalIndicators = ({ country }: PoliticalIndicatorsProps) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={radarData}>
+              <RadarChart 
+                data={radarData}
+                margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+              >
                 <PolarGrid />
-                <PolarAngleAxis dataKey="subject" />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                <PolarAngleAxis 
+                  dataKey="subject" 
+                  tick={{ 
+                    fill: 'hsl(var(--foreground))', 
+                    fontSize: '0.75rem',
+                    fontWeight: 600
+                  }} 
+                />
+                <PolarRadiusAxis 
+                  angle={30} 
+                  domain={[0, 100]} 
+                  tick={{ 
+                    fill: 'hsl(var(--muted-foreground))', 
+                    fontSize: '0.625rem' 
+                  }}
+                />
                 <Radar
                   name="Score"
                   dataKey="value"
@@ -97,8 +114,19 @@ const PoliticalIndicators = ({ country }: PoliticalIndicatorsProps) => {
                   fill="#2563eb"
                   fillOpacity={0.6}
                 />
-                <Tooltip />
-                <Legend />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--background))', 
+                    borderColor: 'hsl(var(--border))',
+                    borderRadius: '0.5rem'
+                  }}
+                />
+                <Legend 
+                  wrapperStyle={{ 
+                    fontSize: '0.75rem',
+                    color: 'hsl(var(--muted-foreground))'
+                  }} 
+                />
               </RadarChart>
             </ResponsiveContainer>
           </div>
