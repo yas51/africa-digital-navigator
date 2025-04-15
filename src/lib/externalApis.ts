@@ -15,6 +15,10 @@ const updatePoliticalIndicators = async (countryCode: string) => {
         special_economic_zones: ['Zone Franche de Tanger', 'Casablanca Finance City', 'Technopole d\'Oujda'],
         fiscal_incentives: ['Exonération fiscale 5 ans', 'Réduction TVA', 'Allègements pour l\'export'],
       },
+      'cg': { // Congo
+        special_economic_zones: ['Zone Économique Spéciale de Brazzaville', 'Zone Franche de Pointe-Noire', 'Corridor industriel Pointe-Noire-Brazzaville'],
+        fiscal_incentives: ['Exonération fiscale pour investissements directs', 'Réductions pour industries extractives', 'Avantages pour secteur forestier'],
+      },
       'za': { // Afrique du Sud
         special_economic_zones: ['Zone industrielle de Coega', 'Zone économique de Johannesburg', 'Parc technologique du Cap'],
         fiscal_incentives: ['Crédit d\'impôt R&D', 'Incitations pour les entreprises noires', 'Subventions à l\'emploi'],
@@ -88,8 +92,8 @@ const updatePoliticalIndicators = async (countryCode: string) => {
         fiscal_incentives: ['Exonération fiscale sur 5 ans', 'Déduction pour investissement', 'Allégements pour le secteur minier'],
       },
       'cd': { // RD Congo
-        special_economic_zones: ['Zone Économique Spéciale de Maluku', 'Kin-Malebo Special Economic Zone', 'Illebo Industrial Park'],
-        fiscal_incentives: ['Exonération fiscale temporaire', 'Réduction de l\'impôt sur le revenu', 'Avantages pour le secteur minier'],
+        special_economic_zones: ['Zone Économique Spéciale de Maluku-Kinshasa', 'Parc Agro-Industriel de Bukanga Lonzo', 'Zone Franche de Kisangani'],
+        fiscal_incentives: ['Exonération d\'impôts pour nouvelles entreprises', 'Incitations pour secteur minier', 'Avantages fiscaux pour énergies renouvelables'],
       },
       'ao': { // Angola
         special_economic_zones: ['Luanda-Bengo Special Economic Zone', 'Zona Franca do Lobito', 'Viana Industrial Park'],

@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   LineChart,
   Line,
@@ -18,6 +18,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import type { CountryData } from '@/data/countriesData';
 import { updatePoliticalIndicators } from '@/lib/externalApis';
+import { useToast } from "@/hooks/use-toast";
 
 interface PoliticalIndicatorsProps {
   country: CountryData;
@@ -37,16 +38,28 @@ const formatSubject = (subject: string) => {
 };
 
 const PoliticalIndicators = ({ country }: PoliticalIndicatorsProps) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
   // Mettre à jour les données politiques au chargement du composant
   useEffect(() => {
     const updateData = async () => {
+      setIsLoading(true);
       console.log(`Tentative de mise à jour des indicateurs politiques pour: ${country.id}`);
-      await updatePoliticalIndicators(country.id);
+      const success = await updatePoliticalIndicators(country.id);
+      
+      if (success) {
+        toast({
+          title: "Données mises à jour",
+          description: `Les indicateurs politiques pour ${country.name} ont été actualisés.`,
+        });
+      }
+      setIsLoading(false);
     };
     
     // Forcer la mise à jour des données à chaque changement de pays
     updateData();
-  }, [country.id]);
+  }, [country.id, country.name, toast]);
 
   // Vérification des données pour le débogage
   console.log("PoliticalIndicators - Données du pays:", country.id, {
@@ -102,7 +115,7 @@ const PoliticalIndicators = ({ country }: PoliticalIndicatorsProps) => {
       <CardHeader>
         <CardTitle>Indicateurs Politiques et Réglementaires</CardTitle>
         <CardDescription>
-          Analyse du cadre juridique et politique
+          Analyse du cadre juridique et politique {isLoading && "(Mise à jour...)"}
         </CardDescription>
       </CardHeader>
       <CardContent>
