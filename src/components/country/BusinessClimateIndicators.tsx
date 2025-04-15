@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -16,12 +17,16 @@ const BusinessClimateIndicators = ({ country }: BusinessClimateIndicatorsProps) 
   console.log("BusinessClimateIndicators - Données du pays:", country.id, {
     ease_of_doing_business: country.ease_of_doing_business,
     business_creation_days: country.business_creation_days,
+    credit_access_score: country.credit_access_score,
+    foreign_investor_protection: country.foreign_investor_protection,
+    skilled_workforce_availability: country.skilled_workforce_availability,
+    import_export_regulations: country.import_export_regulations,
     last_update: country.business_climate_last_update
   });
 
   // Fonction pour évaluer textuellement un score
   const getScoreLabel = (score: number | undefined) => {
-    if (!score) return "Non disponible";
+    if (score === undefined || score === null) return "Non disponible";
     if (score >= 80) return "Excellent";
     if (score >= 65) return "Très bon";
     if (score >= 50) return "Bon";
@@ -31,7 +36,7 @@ const BusinessClimateIndicators = ({ country }: BusinessClimateIndicatorsProps) 
 
   // Fonction pour obtenir la couleur en fonction du score
   const getScoreColor = (score: number | undefined) => {
-    if (!score) return "bg-gray-300";
+    if (score === undefined || score === null) return "bg-gray-300";
     if (score >= 80) return "bg-green-500";
     if (score >= 65) return "bg-green-400";
     if (score >= 50) return "bg-blue-500";
@@ -103,7 +108,36 @@ const BusinessClimateIndicators = ({ country }: BusinessClimateIndicatorsProps) 
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {indicators.map((indicator, index) => {
-            const displayScore = indicator.inversed && indicator.value 
+            // Gestion des valeurs nulles ou undefined
+            if (indicator.value === undefined || indicator.value === null) {
+              return (
+                <div key={index} className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="bg-primary/10 p-2 rounded-full">
+                      {indicator.icon}
+                    </div>
+                    <div>
+                      <h3 className="font-medium">{indicator.name}</h3>
+                      <p className="text-sm text-muted-foreground">{indicator.description}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">N/A</span>
+                      <span className="text-sm text-muted-foreground">Non disponible</span>
+                    </div>
+                    
+                    <Progress 
+                      value={0} 
+                      className="h-2 bg-gray-300"
+                    />
+                  </div>
+                </div>
+              );
+            }
+            
+            const displayScore = indicator.inversed 
               ? Math.max(0, 100 - (indicator.value * 2)) 
               : indicator.value;
             
@@ -136,9 +170,7 @@ const BusinessClimateIndicators = ({ country }: BusinessClimateIndicatorsProps) 
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">
-                      {indicator.value !== undefined 
-                        ? indicator.format(indicator.value) 
-                        : "N/A"}
+                      {indicator.format(indicator.value)}
                     </span>
                     <span className="text-sm text-muted-foreground">
                       {scoreLabel}
