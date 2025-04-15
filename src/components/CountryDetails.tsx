@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import GeneralInfo from './country/GeneralInfo';
 import EconomicOverview from './country/EconomicOverview';
 import DigitalOverview from './country/DigitalOverview';
+import DigitalIndicators from './country/DigitalIndicators';
 import EconomicIndicators from './country/EconomicIndicators';
 import BalanceIndicators from './country/BalanceIndicators';
 import PoliticalIndicators from './country/PoliticalIndicators';
@@ -88,6 +89,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
         <GeneralInfo country={updatedCountry} />
         <EconomicOverview country={updatedCountry} />
         <DigitalOverview country={updatedCountry} />
+        <DigitalIndicators country={updatedCountry} />
         <PoliticalIndicators country={updatedCountry} />
         <EconomicIndicators country={updatedCountry} />
         <BalanceIndicators country={updatedCountry} />
