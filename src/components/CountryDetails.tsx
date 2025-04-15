@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import type { CountryData } from '@/data/countriesData';
 import { supabase } from '@/integrations/supabase/client';
 import { updateCountryWithExternalData } from '@/lib/supabase';
-import { updateCountryEconomicData } from '@/lib/economicIndicatorsApi';
+import { updateCountryEconomicData } from '@/services/economicDataService';
 import { updatePoliticalIndicators } from '@/lib/externalApis';
 import { useToast } from "@/hooks/use-toast";
 import GeneralInfo from './country/GeneralInfo';
