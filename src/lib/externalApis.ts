@@ -50,6 +50,10 @@ const updatePoliticalIndicators = async (countryCode: string) => {
       'ne': { // Niger
         special_economic_zones: ['Parc Industriel de Niamey', 'Zone Économique Spéciale de Dosso', 'Zone Franche de Maradi'],
         fiscal_incentives: ['Exonération fiscale de 5 à 7 ans', 'Réduction d\'impôts pour les investisseurs', 'Avantages douaniers spéciaux'],
+      },
+      'ml': { // Mali
+        special_economic_zones: ['Zone Économique Spéciale de Bamako', 'Parc Industriel de Koulikoro', 'Zone Franche de Kayes'],
+        fiscal_incentives: ['Exonération fiscale temporaire de 3 ans', 'Réductions douanières pour l\'équipement', 'Avantages pour l\'agro-industrie'],
       }
     };
     
