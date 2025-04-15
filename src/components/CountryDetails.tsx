@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import type { CountryData } from '@/data/countriesData';
 import { supabase } from '@/integrations/supabase/client';
