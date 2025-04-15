@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import type { CountryData } from '@/data/countriesData';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,6 +14,7 @@ import PoliticalIndicators from './country/PoliticalIndicators';
 import BusinessClimateIndicators from './country/BusinessClimateIndicators';
 import UpdateInfo from './country/UpdateInfo';
 import EconomicChart from './country/EconomicChart';
+import { fetchEconomicIndicators } from '@/services/economicDataService';
 
 interface CountryDetailsProps {
   country: CountryData;
