@@ -23,6 +23,19 @@ interface PoliticalIndicatorsProps {
   country: CountryData;
 }
 
+// Fonction pour formater et raccourcir les labels longs
+const formatSubject = (subject: string) => {
+  const labelMap: Record<string, string> = {
+    'Stabilité Politique': 'Stabilité',
+    'Exécution des Contrats': 'Contrats',
+    'Droits de Propriété': 'Propriété',
+    'Risque Géopolitique': 'Géopolitique',
+    'Transparence Fiscale': 'Transparence'
+  };
+  
+  return labelMap[subject] || subject;
+};
+
 const PoliticalIndicators = ({ country }: PoliticalIndicatorsProps) => {
   // Mettre à jour les données politiques au chargement du composant
   useEffect(() => {
@@ -74,6 +87,20 @@ const PoliticalIndicators = ({ country }: PoliticalIndicatorsProps) => {
     },
   ];
 
+  // Utilisé pour le tooltip personnalisé
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="custom-tooltip bg-background border border-border p-2 rounded-md shadow-md">
+          <p className="font-semibold">{data.subject}</p>
+          <p className="text-primary">{`Score: ${payload[0].value}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <Card className="col-span-2">
       <CardHeader>
@@ -84,28 +111,34 @@ const PoliticalIndicators = ({ country }: PoliticalIndicatorsProps) => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="h-[300px]">
+          <div className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart 
                 data={radarData}
-                margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                margin={{ top: 30, right: 40, bottom: 30, left: 40 }}
               >
-                <PolarGrid />
+                <PolarGrid stroke="rgba(150, 150, 150, 0.3)" />
                 <PolarAngleAxis 
                   dataKey="subject" 
                   tick={{ 
                     fill: 'hsl(var(--foreground))', 
-                    fontSize: '0.75rem',
+                    fontSize: '0.8rem',
                     fontWeight: 600
-                  }} 
+                  }}
+                  tickFormatter={formatSubject}
+                  style={{
+                    fontSize: '0.8rem'
+                  }}
+                  tickSize={15}
                 />
                 <PolarRadiusAxis 
                   angle={30} 
                   domain={[0, 100]} 
                   tick={{ 
                     fill: 'hsl(var(--muted-foreground))', 
-                    fontSize: '0.625rem' 
+                    fontSize: '0.7rem' 
                   }}
+                  tickCount={5}
                 />
                 <Radar
                   name="Score"
@@ -114,18 +147,13 @@ const PoliticalIndicators = ({ country }: PoliticalIndicatorsProps) => {
                   fill="#2563eb"
                   fillOpacity={0.6}
                 />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'hsl(var(--background))', 
-                    borderColor: 'hsl(var(--border))',
-                    borderRadius: '0.5rem'
-                  }}
-                />
+                <Tooltip content={<CustomTooltip />} />
                 <Legend 
                   wrapperStyle={{ 
-                    fontSize: '0.75rem',
-                    color: 'hsl(var(--muted-foreground))'
-                  }} 
+                    fontSize: '0.85rem',
+                    color: 'hsl(var(--foreground))',
+                    marginTop: '10px'
+                  }}
                 />
               </RadarChart>
             </ResponsiveContainer>
