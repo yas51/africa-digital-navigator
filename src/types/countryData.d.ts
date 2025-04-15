@@ -29,5 +29,13 @@ declare module '@/data/countriesData' {
     special_economic_zones?: string[];
     fiscal_incentives?: string[];
     political_indicators_last_update?: string;
+    // Indicateurs du climat des affaires
+    ease_of_doing_business?: number;
+    business_creation_days?: number;
+    credit_access_score?: number;
+    foreign_investor_protection?: number;
+    skilled_workforce_availability?: number;
+    import_export_regulations?: number;
+    business_climate_last_update?: string;
   }
 }

@@ -12,6 +12,7 @@ import DigitalOverview from './country/DigitalOverview';
 import EconomicIndicators from './country/EconomicIndicators';
 import BalanceIndicators from './country/BalanceIndicators';
 import PoliticalIndicators from './country/PoliticalIndicators';
+import BusinessClimateIndicators from './country/BusinessClimateIndicators';
 import UpdateInfo from './country/UpdateInfo';
 import EconomicChart from './country/EconomicChart';
 
@@ -90,6 +91,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
         <PoliticalIndicators country={updatedCountry} />
         <EconomicIndicators country={updatedCountry} />
         <BalanceIndicators country={updatedCountry} />
+        <BusinessClimateIndicators country={updatedCountry} />
         <UpdateInfo country={updatedCountry} />
       </div>
       <EconomicChart country={updatedCountry} />
