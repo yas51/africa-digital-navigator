@@ -44,12 +44,8 @@ const PoliticalIndicators = ({ country }: PoliticalIndicatorsProps) => {
       await updatePoliticalIndicators(country.id);
     };
     
-    // Si les données sont manquantes ou stales, les mettre à jour
-    if (!country.special_economic_zones || !country.fiscal_incentives || 
-        !country.political_indicators_last_update || 
-        new Date().getTime() - new Date(country.political_indicators_last_update).getTime() > 3600000) {
-      updateData();
-    }
+    // Forcer la mise à jour des données à chaque changement de pays
+    updateData();
   }, [country.id]);
 
   // Vérification des données pour le débogage

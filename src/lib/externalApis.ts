@@ -46,17 +46,24 @@ const updatePoliticalIndicators = async (countryCode: string) => {
       'et': { // Éthiopie
         special_economic_zones: ['Hawassa Industrial Park', 'Addis Ababa ICT Park', 'Bole Lemi Industrial Park'],
         fiscal_incentives: ['Exonération fiscale jusqu\'à 8 ans', 'Importation duty-free', 'Incitations pour les exportateurs'],
+      },
+      'ne': { // Niger
+        special_economic_zones: ['Parc Industriel de Niamey', 'Zone Économique Spéciale de Dosso', 'Zone Franche de Maradi'],
+        fiscal_incentives: ['Exonération fiscale de 5 à 7 ans', 'Réduction d\'impôts pour les investisseurs', 'Avantages douaniers spéciaux'],
       }
     };
     
+    // Convertir le code pays en minuscules pour assurer la correspondance
+    const countryCodeLower = countryCode.toLowerCase();
+    
     // Vérifier si le code pays est dans notre liste
-    if (!politicalDataByCountry[countryCode.toLowerCase()]) {
+    if (!politicalDataByCountry[countryCodeLower]) {
       console.log(`Aucune donnée spécifique trouvée pour le pays: ${countryCode}`);
       return false;
     }
 
     // Extraire les données spécifiques au pays
-    const countrySpecificData = politicalDataByCountry[countryCode.toLowerCase()];
+    const countrySpecificData = politicalDataByCountry[countryCodeLower];
     
     console.log(`Données spécifiques pour ${countryCode}:`, countrySpecificData);
 
@@ -80,7 +87,7 @@ const updatePoliticalIndicators = async (countryCode: string) => {
     const { error } = await supabase
       .from('countries')
       .update(politicalData)
-      .eq('id', countryCode.toLowerCase());
+      .eq('id', countryCodeLower);
 
     if (error) {
       console.error('Erreur lors de la mise à jour des indicateurs politiques:', error);
