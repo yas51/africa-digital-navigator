@@ -11,26 +11,34 @@ export type Database = {
     Tables: {
       countries: {
         Row: {
+          airport_quality: number | null
           contract_enforcement_score: number | null
           corruptionIndex: number
           current_inflation: number | null
           doingBusinessRank: number
           education: number
+          electricity_cost: number | null
+          energy_stability: number | null
           exchange_rate: number | null
           exchange_rate_volatility: number | null
           fdiInflow: number
           fiscal_incentives: string[] | null
           fiscal_transparency_score: number | null
           flag: string
+          fuel_cost: number | null
           gdp: number
           gdpGrowth: number
           geopolitical_risk_score: number | null
           hdi: number
           id: string
+          infrastructure_last_update: string | null
+          infrastructure_quality: number | null
           internetPenetration: number
           last_real_time_update: string | null
           legal_framework_updated_at: string | null
+          logistics_hubs: string[] | null
           logisticsIndex: number
+          lpi_score: number | null
           mobilePenetration: number
           name: string
           officialLanguages: string[]
@@ -39,12 +47,15 @@ export type Database = {
           political_stability_index: number | null
           politicalStability: number
           population: number
+          port_quality: number | null
           property_rights_score: number | null
           public_debt_gdp: number | null
           region: string
+          road_quality: number | null
           special_economic_zones: string[] | null
           trade_balance: number | null
           unemployment_rate: number | null
+          water_cost: number | null
           wb_ease_business_score: number | null
           wb_fdi_net_inflows: number | null
           wb_gini_index: number | null
@@ -57,26 +68,34 @@ export type Database = {
           wb_trade_percentage: number | null
         }
         Insert: {
+          airport_quality?: number | null
           contract_enforcement_score?: number | null
           corruptionIndex: number
           current_inflation?: number | null
           doingBusinessRank: number
           education: number
+          electricity_cost?: number | null
+          energy_stability?: number | null
           exchange_rate?: number | null
           exchange_rate_volatility?: number | null
           fdiInflow: number
           fiscal_incentives?: string[] | null
           fiscal_transparency_score?: number | null
           flag: string
+          fuel_cost?: number | null
           gdp: number
           gdpGrowth: number
           geopolitical_risk_score?: number | null
           hdi: number
           id: string
+          infrastructure_last_update?: string | null
+          infrastructure_quality?: number | null
           internetPenetration: number
           last_real_time_update?: string | null
           legal_framework_updated_at?: string | null
+          logistics_hubs?: string[] | null
           logisticsIndex: number
+          lpi_score?: number | null
           mobilePenetration: number
           name: string
           officialLanguages: string[]
@@ -85,12 +104,15 @@ export type Database = {
           political_stability_index?: number | null
           politicalStability: number
           population: number
+          port_quality?: number | null
           property_rights_score?: number | null
           public_debt_gdp?: number | null
           region: string
+          road_quality?: number | null
           special_economic_zones?: string[] | null
           trade_balance?: number | null
           unemployment_rate?: number | null
+          water_cost?: number | null
           wb_ease_business_score?: number | null
           wb_fdi_net_inflows?: number | null
           wb_gini_index?: number | null
@@ -103,26 +125,34 @@ export type Database = {
           wb_trade_percentage?: number | null
         }
         Update: {
+          airport_quality?: number | null
           contract_enforcement_score?: number | null
           corruptionIndex?: number
           current_inflation?: number | null
           doingBusinessRank?: number
           education?: number
+          electricity_cost?: number | null
+          energy_stability?: number | null
           exchange_rate?: number | null
           exchange_rate_volatility?: number | null
           fdiInflow?: number
           fiscal_incentives?: string[] | null
           fiscal_transparency_score?: number | null
           flag?: string
+          fuel_cost?: number | null
           gdp?: number
           gdpGrowth?: number
           geopolitical_risk_score?: number | null
           hdi?: number
           id?: string
+          infrastructure_last_update?: string | null
+          infrastructure_quality?: number | null
           internetPenetration?: number
           last_real_time_update?: string | null
           legal_framework_updated_at?: string | null
+          logistics_hubs?: string[] | null
           logisticsIndex?: number
+          lpi_score?: number | null
           mobilePenetration?: number
           name?: string
           officialLanguages?: string[]
@@ -131,12 +161,15 @@ export type Database = {
           political_stability_index?: number | null
           politicalStability?: number
           population?: number
+          port_quality?: number | null
           property_rights_score?: number | null
           public_debt_gdp?: number | null
           region?: string
+          road_quality?: number | null
           special_economic_zones?: string[] | null
           trade_balance?: number | null
           unemployment_rate?: number | null
+          water_cost?: number | null
           wb_ease_business_score?: number | null
           wb_fdi_net_inflows?: number | null
           wb_gini_index?: number | null

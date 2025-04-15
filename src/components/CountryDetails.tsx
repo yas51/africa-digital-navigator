@@ -16,6 +16,7 @@ import BusinessClimateIndicators from './country/BusinessClimateIndicators';
 import UpdateInfo from './country/UpdateInfo';
 import EconomicChart from './country/EconomicChart';
 import { fetchEconomicIndicators } from '@/services/economicDataService';
+import LogisticsInfrastructure from './country/LogisticsInfrastructure';
 
 interface CountryDetailsProps {
   country: CountryData;
@@ -89,6 +90,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
         <GeneralInfo country={updatedCountry} />
         <EconomicOverview country={updatedCountry} />
         <DigitalOverview country={updatedCountry} />
+        <LogisticsInfrastructure country={updatedCountry} />
         <DigitalIndicators country={updatedCountry} />
         <PoliticalIndicators country={updatedCountry} />
         <EconomicIndicators country={updatedCountry} />
