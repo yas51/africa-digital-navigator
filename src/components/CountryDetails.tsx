@@ -19,6 +19,8 @@ import BusinessClimateIndicators from './country/BusinessClimateIndicators';
 import UpdateInfo from './country/UpdateInfo';
 import EconomicChart from './country/EconomicChart';
 import LogisticsInfrastructure from './country/LogisticsInfrastructure';
+import DemographicIndicators from './country/DemographicIndicators';
+import CulturalIndicators from './country/CulturalIndicators';
 
 interface CountryDetailsProps {
   country: CountryData;
@@ -53,7 +55,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
 
             if (data) {
               console.log("Données mises à jour avec succès:", data);
-              setUpdatedCountry(data as CountryData);
+              setUpdatedCountry(data as unknown as CountryData);
               toast({
                 title: "Données mises à jour",
                 description: `Les données pour ${country.name} ont été actualisées.`
@@ -64,6 +66,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
           await updateCountryEconomicData(country.id);
           await updatePoliticalIndicators(country.id);
           await updateCountryInfrastructureData(country.id);
+          await updateCountryDemographicData(country.id);
           
           const { data } = await supabase
             .from('countries')
@@ -73,7 +76,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
             
           if (data) {
             console.log("Données fraîches récupérées:", data);
-            setUpdatedCountry(data as CountryData);
+            setUpdatedCountry(data as unknown as CountryData);
           }
         }
       } catch (error) {
@@ -95,6 +98,8 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
         <GeneralInfo country={updatedCountry} />
         <EconomicOverview country={updatedCountry} />
         <DigitalOverview country={updatedCountry} />
+        <DemographicIndicators country={updatedCountry} />
+        <CulturalIndicators country={updatedCountry} />
         <LogisticsInfrastructure country={updatedCountry} />
         <DigitalIndicators country={updatedCountry} />
         <PoliticalIndicators country={updatedCountry} />

@@ -1,4 +1,6 @@
+
 import { CountryData } from '@/data/countriesData';
+import { Json } from '@/integrations/supabase/types';
 
 // Étend le type CountryData de base pour inclure les propriétés Supabase supplémentaires
 declare module '@/data/countriesData' {
@@ -56,20 +58,20 @@ declare module '@/data/countriesData' {
     higher_education_rate?: number;
     age_distribution?: {
       [key: string]: number;
-    };
+    } | Json;
     ethnic_groups?: {
       [key: string]: number;
-    };
+    } | Json;
     religious_groups?: {
       [key: string]: number;
-    };
+    } | Json;
     cultural_dimensions?: {
       power_distance: number;
       individualism: number;
       masculinity: number;
       uncertainty_avoidance: number;
       long_term_orientation: number;
-    };
+    } | Json;
     social_stability_index?: number;
     demographic_data_last_update?: string;
   }

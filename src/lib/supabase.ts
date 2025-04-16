@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import type { CountryData } from '@/data/countriesData';
 
@@ -25,7 +24,7 @@ export const setupRealtimeUpdates = (callback: (updatedCountries: CountryData[])
         
         // Call the callback with the updated countries
         if (countries) {
-          callback(countries as CountryData[]);
+          callback(countries as unknown as CountryData[]);
         }
       }
     )
@@ -48,7 +47,7 @@ export const fetchCountries = async (): Promise<CountryData[]> => {
     throw error;
   }
   
-  return data as CountryData[];
+  return data as unknown as CountryData[];
 };
 
 // Fetch top countries by opportunity score
@@ -64,7 +63,7 @@ export const fetchTopCountriesByScore = async (limit: number = 5): Promise<Count
     throw error;
   }
   
-  return data as CountryData[];
+  return data as unknown as CountryData[];
 };
 
 // Fetch a country by ID
@@ -82,7 +81,7 @@ export const fetchCountryById = async (id: string): Promise<CountryData | null> 
     return null;
   }
   
-  return data as CountryData;
+  return data as unknown as CountryData;
 };
 
 // Update country with external data
