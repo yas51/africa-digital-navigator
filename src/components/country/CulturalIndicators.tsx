@@ -54,7 +54,7 @@ const CulturalIndicators = ({ country }: CulturalIndicatorsProps) => {
           return (
             <div key={key} className="flex justify-between">
               <span className="text-sm text-muted-foreground">{label}:</span>
-              <span className="font-medium">{Math.round(Number(value))}/100</span>
+              <span className="font-medium">{value !== null && value !== undefined ? Math.round(Number(value)) : 'N/A'}/100</span>
             </div>
           );
         });

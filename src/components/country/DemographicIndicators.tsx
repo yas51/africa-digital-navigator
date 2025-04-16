@@ -33,6 +33,12 @@ const DemographicIndicators = ({ country }: DemographicIndicatorsProps) => {
     }
   };
 
+  // Fonction de formatage sécurisé pour les valeurs numériques
+  const safeFormat = (value: any, decimals: number = 1) => {
+    if (value === undefined || value === null) return "Non disponible";
+    return Number(value).toFixed(decimals);
+  };
+
   return (
     <Card className="card-hover">
       <CardHeader className="pb-2">
@@ -42,38 +48,38 @@ const DemographicIndicators = ({ country }: DemographicIndicatorsProps) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          {country.population_growth !== undefined && (
+          {country.population_growth !== undefined && country.population_growth !== null && (
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Croissance population:</span>
-              <span className="font-medium">{country.population_growth.toFixed(1)}%</span>
+              <span className="font-medium">{safeFormat(country.population_growth)}%</span>
             </div>
           )}
           
-          {country.median_age !== undefined && (
+          {country.median_age !== undefined && country.median_age !== null && (
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Âge médian:</span>
-              <span className="font-medium">{country.median_age.toFixed(1)} ans</span>
+              <span className="font-medium">{safeFormat(country.median_age)} ans</span>
             </div>
           )}
           
-          {country.urban_population_percentage !== undefined && (
+          {country.urban_population_percentage !== undefined && country.urban_population_percentage !== null && (
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Population urbaine:</span>
-              <span className="font-medium">{country.urban_population_percentage.toFixed(1)}%</span>
+              <span className="font-medium">{safeFormat(country.urban_population_percentage)}%</span>
             </div>
           )}
           
-          {country.literacy_rate !== undefined && (
+          {country.literacy_rate !== undefined && country.literacy_rate !== null && (
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Taux d'alphabétisation:</span>
-              <span className="font-medium">{country.literacy_rate.toFixed(1)}%</span>
+              <span className="font-medium">{safeFormat(country.literacy_rate)}%</span>
             </div>
           )}
           
-          {country.higher_education_rate !== undefined && (
+          {country.higher_education_rate !== undefined && country.higher_education_rate !== null && (
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Éducation supérieure:</span>
-              <span className="font-medium">{country.higher_education_rate.toFixed(1)}%</span>
+              <span className="font-medium">{safeFormat(country.higher_education_rate)}%</span>
             </div>
           )}
           
@@ -84,10 +90,10 @@ const DemographicIndicators = ({ country }: DemographicIndicatorsProps) => {
             </div>
           )}
           
-          {country.social_stability_index !== undefined && (
+          {country.social_stability_index !== undefined && country.social_stability_index !== null && (
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Indice de stabilité sociale:</span>
-              <span className="font-medium">{(country.social_stability_index * 100).toFixed(0)}/100</span>
+              <span className="font-medium">{safeFormat(country.social_stability_index * 100, 0)}/100</span>
             </div>
           )}
         </div>
