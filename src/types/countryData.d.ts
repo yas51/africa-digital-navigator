@@ -1,4 +1,3 @@
-
 import { CountryData } from '@/data/countriesData';
 
 // Étend le type CountryData de base pour inclure les propriétés Supabase supplémentaires
@@ -49,5 +48,29 @@ declare module '@/data/countriesData' {
     lpi_score?: number;
     logistics_hubs?: string[];
     infrastructure_last_update?: string;
+    // Nouveaux indicateurs socio-culturels et démographiques
+    population_growth?: number;
+    median_age?: number;
+    urban_population_percentage?: number;
+    literacy_rate?: number;
+    higher_education_rate?: number;
+    age_distribution?: {
+      [key: string]: number;
+    };
+    ethnic_groups?: {
+      [key: string]: number;
+    };
+    religious_groups?: {
+      [key: string]: number;
+    };
+    cultural_dimensions?: {
+      power_distance: number;
+      individualism: number;
+      masculinity: number;
+      uncertainty_avoidance: number;
+      long_term_orientation: number;
+    };
+    social_stability_index?: number;
+    demographic_data_last_update?: string;
   }
 }

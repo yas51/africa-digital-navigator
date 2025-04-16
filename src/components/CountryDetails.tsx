@@ -6,6 +6,7 @@ import { updateCountryWithExternalData } from '@/lib/supabase';
 import { updateCountryEconomicData } from '@/services/economicDataService';
 import { updatePoliticalIndicators } from '@/lib/externalApis';
 import { updateCountryInfrastructureData } from '@/services/infrastructureDataService';
+import { updateCountryDemographicData } from '@/services/infrastructureDataService';
 import { useToast } from "@/hooks/use-toast";
 import GeneralInfo from './country/GeneralInfo';
 import EconomicOverview from './country/EconomicOverview';
@@ -41,8 +42,9 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
           const economicUpdated = await updateCountryEconomicData(country.id);
           const politicalUpdated = await updatePoliticalIndicators(country.id);
           const infrastructureUpdated = await updateCountryInfrastructureData(country.id);
+          const demographicUpdated = await updateCountryDemographicData(country.id);
           
-          if (updated || economicUpdated || politicalUpdated || infrastructureUpdated) {
+          if (updated || economicUpdated || politicalUpdated || infrastructureUpdated || demographicUpdated) {
             const { data, error } = await supabase
               .from('countries')
               .select('*')

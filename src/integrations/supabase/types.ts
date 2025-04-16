@@ -11,14 +11,18 @@ export type Database = {
     Tables: {
       countries: {
         Row: {
+          age_distribution: Json | null
           airport_quality: number | null
           contract_enforcement_score: number | null
           corruptionIndex: number
+          cultural_dimensions: Json | null
           current_inflation: number | null
+          demographic_data_last_update: string | null
           doingBusinessRank: number
           education: number
           electricity_cost: number | null
           energy_stability: number | null
+          ethnic_groups: Json | null
           exchange_rate: number | null
           exchange_rate_volatility: number | null
           fdiInflow: number
@@ -30,15 +34,18 @@ export type Database = {
           gdpGrowth: number
           geopolitical_risk_score: number | null
           hdi: number
+          higher_education_rate: number | null
           id: string
           infrastructure_last_update: string | null
           infrastructure_quality: number | null
           internetPenetration: number
           last_real_time_update: string | null
           legal_framework_updated_at: string | null
+          literacy_rate: number | null
           logistics_hubs: string[] | null
           logisticsIndex: number
           lpi_score: number | null
+          median_age: number | null
           mobilePenetration: number
           name: string
           officialLanguages: string[]
@@ -47,14 +54,18 @@ export type Database = {
           political_stability_index: number | null
           politicalStability: number
           population: number
+          population_growth: number | null
           port_quality: number | null
           property_rights_score: number | null
           public_debt_gdp: number | null
           region: string
+          religious_groups: Json | null
           road_quality: number | null
+          social_stability_index: number | null
           special_economic_zones: string[] | null
           trade_balance: number | null
           unemployment_rate: number | null
+          urban_population_percentage: number | null
           water_cost: number | null
           wb_ease_business_score: number | null
           wb_fdi_net_inflows: number | null
@@ -68,14 +79,18 @@ export type Database = {
           wb_trade_percentage: number | null
         }
         Insert: {
+          age_distribution?: Json | null
           airport_quality?: number | null
           contract_enforcement_score?: number | null
           corruptionIndex: number
+          cultural_dimensions?: Json | null
           current_inflation?: number | null
+          demographic_data_last_update?: string | null
           doingBusinessRank: number
           education: number
           electricity_cost?: number | null
           energy_stability?: number | null
+          ethnic_groups?: Json | null
           exchange_rate?: number | null
           exchange_rate_volatility?: number | null
           fdiInflow: number
@@ -87,15 +102,18 @@ export type Database = {
           gdpGrowth: number
           geopolitical_risk_score?: number | null
           hdi: number
+          higher_education_rate?: number | null
           id: string
           infrastructure_last_update?: string | null
           infrastructure_quality?: number | null
           internetPenetration: number
           last_real_time_update?: string | null
           legal_framework_updated_at?: string | null
+          literacy_rate?: number | null
           logistics_hubs?: string[] | null
           logisticsIndex: number
           lpi_score?: number | null
+          median_age?: number | null
           mobilePenetration: number
           name: string
           officialLanguages: string[]
@@ -104,14 +122,18 @@ export type Database = {
           political_stability_index?: number | null
           politicalStability: number
           population: number
+          population_growth?: number | null
           port_quality?: number | null
           property_rights_score?: number | null
           public_debt_gdp?: number | null
           region: string
+          religious_groups?: Json | null
           road_quality?: number | null
+          social_stability_index?: number | null
           special_economic_zones?: string[] | null
           trade_balance?: number | null
           unemployment_rate?: number | null
+          urban_population_percentage?: number | null
           water_cost?: number | null
           wb_ease_business_score?: number | null
           wb_fdi_net_inflows?: number | null
@@ -125,14 +147,18 @@ export type Database = {
           wb_trade_percentage?: number | null
         }
         Update: {
+          age_distribution?: Json | null
           airport_quality?: number | null
           contract_enforcement_score?: number | null
           corruptionIndex?: number
+          cultural_dimensions?: Json | null
           current_inflation?: number | null
+          demographic_data_last_update?: string | null
           doingBusinessRank?: number
           education?: number
           electricity_cost?: number | null
           energy_stability?: number | null
+          ethnic_groups?: Json | null
           exchange_rate?: number | null
           exchange_rate_volatility?: number | null
           fdiInflow?: number
@@ -144,15 +170,18 @@ export type Database = {
           gdpGrowth?: number
           geopolitical_risk_score?: number | null
           hdi?: number
+          higher_education_rate?: number | null
           id?: string
           infrastructure_last_update?: string | null
           infrastructure_quality?: number | null
           internetPenetration?: number
           last_real_time_update?: string | null
           legal_framework_updated_at?: string | null
+          literacy_rate?: number | null
           logistics_hubs?: string[] | null
           logisticsIndex?: number
           lpi_score?: number | null
+          median_age?: number | null
           mobilePenetration?: number
           name?: string
           officialLanguages?: string[]
@@ -161,14 +190,18 @@ export type Database = {
           political_stability_index?: number | null
           politicalStability?: number
           population?: number
+          population_growth?: number | null
           port_quality?: number | null
           property_rights_score?: number | null
           public_debt_gdp?: number | null
           region?: string
+          religious_groups?: Json | null
           road_quality?: number | null
+          social_stability_index?: number | null
           special_economic_zones?: string[] | null
           trade_balance?: number | null
           unemployment_rate?: number | null
+          urban_population_percentage?: number | null
           water_cost?: number | null
           wb_ease_business_score?: number | null
           wb_fdi_net_inflows?: number | null
