@@ -1,8 +1,11 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import type { CountryData } from '@/data/countriesData';
 
 // Setup real-time updates function
 export const setupRealtimeUpdates = (callback: (updatedCountries: CountryData[]) => void) => {
+  console.log('Configuration des mises à jour en temps réel via Supabase...');
+  
   // Configure a real-time update channel
   const channel = supabase
     .channel('countries_realtime')
@@ -14,7 +17,7 @@ export const setupRealtimeUpdates = (callback: (updatedCountries: CountryData[])
         table: 'countries' 
       },
       async (payload) => {
-        console.log('Real-time update:', payload);
+        console.log('Mise à jour en temps réel reçue:', payload);
         
         // After receiving an update, fetch the latest data
         const { data: countries } = await supabase
@@ -28,9 +31,12 @@ export const setupRealtimeUpdates = (callback: (updatedCountries: CountryData[])
         }
       }
     )
-    .subscribe();
+    .subscribe((status) => {
+      console.log(`Statut de l'abonnement aux mises à jour en temps réel: ${status}`);
+    });
 
   return () => {
+    console.log('Désabonnement des mises à jour en temps réel');
     supabase.removeChannel(channel);
   };
 };
@@ -119,16 +125,16 @@ export const startPeriodicUpdates = (intervalInSeconds: number = 60) => {
   // Set up a timer to periodically check for updates
   const intervalId = setInterval(async () => {
     try {
-      console.log('Checking for updates...');
+      console.log('Vérification des mises à jour...');
       const { data: countries } = await supabase
         .from('countries')
         .select('*')
         .order('name');
       
       // Here we would normally update the countries with the latest data
-      console.log(`Got ${countries?.length || 0} countries in periodic update`);
+      console.log(`${countries?.length || 0} pays récupérés lors de la mise à jour périodique`);
     } catch (error) {
-      console.error('Error in periodic update:', error);
+      console.error('Erreur lors de la mise à jour périodique:', error);
     }
   }, intervalInSeconds * 1000);
   
