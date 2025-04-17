@@ -1,7 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { getDefaultFinancialData } from './defaultData';
-import { CountryFinancialUpdate } from './types';
+import type { CountryFinancialUpdate } from './types';
 
 export const updateCountryFinancialData = async (countryId: string): Promise<boolean> => {
   try {
@@ -26,9 +26,11 @@ export const updateCountryFinancialData = async (countryId: string): Promise<boo
     console.log(`Données financières mises à jour pour ${countryId}:`, updatedData);
     
     // Mise à jour dans la base de données Supabase
+    // Nous devons mapper nos propriétés aux noms de colonnes dans la base de données
     const { error } = await supabase
       .from('countries')
       .update({
+        // Utiliser les noms de colonnes exacts de la base de données
         financial_inclusion_rate: updatedData.financial_inclusion_rate,
         banks_fintechs_count: updatedData.banks_fintechs_count,
         banking_sector_stability: updatedData.banking_sector_stability,
