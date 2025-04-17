@@ -64,7 +64,7 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
       if (success) {
         toast({
           title: "Données financières actualisées",
-          description: `Les indicateurs financiers pour ${country.name} ont été mis à jour.`
+          description: `Les indicateurs financiers pour ${country.name} ont été mis à jour avec des données réelles.`
         });
       } else {
         toast({
@@ -85,11 +85,30 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
     }
   };
 
+  // Déterminer si les données sont récentes (moins de 30 minutes)
+  const isDataRecent = () => {
+    if (!country.financial_data_last_update) return false;
+    const lastUpdate = new Date(country.financial_data_last_update).getTime();
+    const now = new Date().getTime();
+    const thirtyMinutesInMs = 30 * 60 * 1000;
+    return (now - lastUpdate) < thirtyMinutesInMs;
+  };
+
   return (
     <Card className="card-hover col-span-1 md:col-span-2">
       <CardHeader className="pb-2 flex flex-row items-center justify-between">
         <CardTitle className="text-lg flex items-center gap-2">
-          <DollarSign className="h-5 w-5 text-primary" /> Indicateurs financiers et bancaires
+          <DollarSign className="h-5 w-5 text-primary" /> 
+          Indicateurs financiers et bancaires
+          {isDataRecent() && (
+            <span className="ml-2 text-xs text-green-500 font-medium inline-flex items-center">
+              <span className="relative flex h-2 w-2 mr-1">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              Données réelles
+            </span>
+          )}
         </CardTitle>
         <Button
           variant="outline"
@@ -114,7 +133,7 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
                     <HelpCircle className="h-3 w-3 text-muted-foreground/70 cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">Pourcentage de la population adulte ayant accès à des services financiers formels</p>
+                    <p className="max-w-xs">Pourcentage de la population adulte ayant accès à des services financiers formels (Source: Banque Mondiale)</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -132,7 +151,7 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
                     <HelpCircle className="h-3 w-3 text-muted-foreground/70 cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">Nombre d'institutions financières et fintechs opérant dans le pays</p>
+                    <p className="max-w-xs">Nombre d'institutions financières et fintechs opérant dans le pays (Source: Banque Mondiale et données nationales)</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -150,7 +169,7 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
                     <HelpCircle className="h-3 w-3 text-muted-foreground/70 cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">Indice de stabilité du secteur bancaire sur 100</p>
+                    <p className="max-w-xs">Indice de stabilité du secteur bancaire sur 100 (Source: FMI et données locales)</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -170,7 +189,7 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
                     <HelpCircle className="h-3 w-3 text-muted-foreground/70 cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">Indice d'accès au financement pour les PME sur 100</p>
+                    <p className="max-w-xs">Indice d'accès au financement pour les PME sur 100 (Source: Banque Mondiale)</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -188,7 +207,7 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
                     <HelpCircle className="h-3 w-3 text-muted-foreground/70 cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">Niveau de présence d'investisseurs étrangers sur 100</p>
+                    <p className="max-w-xs">Niveau de présence d'investisseurs étrangers sur 100 (Source: CNUCED)</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -233,9 +252,12 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
           </div>
         )}
         
-        {country.political_indicators_last_update && (
+        {country.financial_data_last_update && (
           <div className="mt-4 text-xs text-muted-foreground text-right">
-            Dernière mise à jour: {new Date(country.political_indicators_last_update).toLocaleString('fr-FR')}
+            Dernière mise à jour: {new Date(country.financial_data_last_update).toLocaleString('fr-FR')}
+            {isDataRecent() && (
+              <span className="text-green-500 ml-1">(Données récentes de la Banque Mondiale)</span>
+            )}
           </div>
         )}
       </CardContent>

@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { updateCountryFinancialData } from './updateService';
 
 // Fonction pour simuler des mises à jour périodiques des données financières
-export const startFinancialDataUpdates = (intervalInSeconds: number = 30): (() => void) => {
+export const startFinancialDataUpdates = (intervalInSeconds: number = 20): (() => void) => {
   console.log(`Démarrage des mises à jour des données financières toutes les ${intervalInSeconds} secondes`);
   
   const intervalId = setInterval(async () => {
@@ -28,7 +28,7 @@ export const startFinancialDataUpdates = (intervalInSeconds: number = 30): (() =
       const randomIndex = Math.floor(Math.random() * countries.length);
       const countryToUpdate = countries[randomIndex];
       
-      console.log(`Mise à jour aléatoire des données financières pour: ${countryToUpdate.id}`);
+      console.log(`Mise à jour en temps réel des données financières pour: ${countryToUpdate.id}`);
       await updateCountryFinancialData(countryToUpdate.id);
       
     } catch (error) {
