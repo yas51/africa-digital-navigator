@@ -16,6 +16,34 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
   const { toast } = useToast();
   const [isRefreshing, setIsRefreshing] = React.useState(false);
 
+  // Fonction pour extraire les données financières du format temporaire
+  const extractFinancialData = () => {
+    if (!country.fiscal_incentives || !Array.isArray(country.fiscal_incentives)) {
+      return null;
+    }
+
+    // Extraire les données à partir du format temporaire dans fiscal_incentives
+    const financialData: Record<string, any> = {};
+    
+    for (const item of country.fiscal_incentives) {
+      if (!item || typeof item !== 'string' || !item.includes(':')) continue;
+      
+      const [key, value] = item.split(':');
+      if (key.startsWith('financial_') || key.includes('_funds_') || key.includes('_capital_') || 
+          key.includes('_financing_') || key.includes('_investors_') || 
+          key.includes('_fintechs_') || key.includes('_banking_')) {
+        if (value === 'true') financialData[key] = true;
+        else if (value === 'false') financialData[key] = false;
+        else if (!isNaN(parseFloat(value))) financialData[key] = parseFloat(value);
+        else financialData[key] = value;
+      }
+    }
+    
+    return Object.keys(financialData).length > 0 ? financialData : null;
+  };
+
+  const financialData = extractFinancialData();
+
   const formatPercent = (value?: number) => {
     if (value === undefined || value === null) return 'N/A';
     return `${value.toFixed(1)}%`;
@@ -90,7 +118,9 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <span className="font-medium">{formatPercent(country.financial_inclusion_rate)}</span>
+              <span className="font-medium">
+                {financialData ? formatPercent(financialData.financial_inclusion_rate) : 'N/A'}
+              </span>
             </div>
             
             <div className="flex items-center justify-between">
@@ -106,7 +136,9 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <span className="font-medium">{country.banks_fintechs_count || 'N/A'}</span>
+              <span className="font-medium">
+                {financialData ? financialData.banks_fintechs_count || 'N/A' : 'N/A'}
+              </span>
             </div>
             
             <div className="flex items-center justify-between">
@@ -122,7 +154,9 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <span className="font-medium">{formatScore(country.banking_sector_stability)}</span>
+              <span className="font-medium">
+                {financialData ? formatScore(financialData.banking_sector_stability) : 'N/A'}
+              </span>
             </div>
           </div>
           
@@ -140,7 +174,9 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <span className="font-medium">{formatScore(country.sme_financing_access)}</span>
+              <span className="font-medium">
+                {financialData ? formatScore(financialData.sme_financing_access) : 'N/A'}
+              </span>
             </div>
             
             <div className="flex items-center justify-between">
@@ -156,7 +192,9 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <span className="font-medium">{formatScore(country.foreign_investors_presence)}</span>
+              <span className="font-medium">
+                {financialData ? formatScore(financialData.foreign_investors_presence) : 'N/A'}
+              </span>
             </div>
             
             <div className="flex items-start justify-between">
@@ -166,12 +204,12 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
               </div>
               <div className="text-right">
                 <div className="flex flex-wrap justify-end gap-1 mt-1">
-                  {country.venture_capital_presence && (
+                  {financialData && financialData.venture_capital_presence && (
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                       Capital-risque
                     </span>
                   )}
-                  {country.development_funds_presence && (
+                  {financialData && financialData.development_funds_presence && (
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       Bailleurs
                     </span>
@@ -195,9 +233,9 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
           </div>
         )}
         
-        {country.financial_data_last_update && (
+        {country.political_indicators_last_update && (
           <div className="mt-4 text-xs text-muted-foreground text-right">
-            Dernière mise à jour: {new Date(country.financial_data_last_update).toLocaleString('fr-FR')}
+            Dernière mise à jour: {new Date(country.political_indicators_last_update).toLocaleString('fr-FR')}
           </div>
         )}
       </CardContent>
