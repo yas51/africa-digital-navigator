@@ -213,10 +213,20 @@ export const updateCountryFinancialData = async (countryId: string): Promise<boo
     
     console.log(`Données financières mises à jour pour ${countryId}:`, updatedData);
     
-    // Mise à jour dans la base de données Supabase
+    // Mise à jour dans la base de données Supabase - en utilisant les noms de colonnes qui existent dans la table
     const { error } = await supabase
       .from('countries')
-      .update(updatedData)
+      .update({
+        financial_inclusion_rate: updatedData.financial_inclusion_rate,
+        banks_fintechs_count: updatedData.banks_fintechs_count,
+        banking_sector_stability: updatedData.banking_sector_stability,
+        sme_financing_access: updatedData.sme_financing_access,
+        foreign_investors_presence: updatedData.foreign_investors_presence,
+        venture_capital_presence: updatedData.venture_capital_presence,
+        development_funds_presence: updatedData.development_funds_presence,
+        foreign_investors_types: updatedData.foreign_investors_types,
+        financial_data_last_update: updatedData.financial_data_last_update
+      })
       .eq('id', countryId);
       
     if (error) {
