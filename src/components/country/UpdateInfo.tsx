@@ -55,6 +55,10 @@ const UpdateInfo = ({ country }: UpdateInfoProps) => {
             <span className="font-medium">{formatDate(country.political_indicators_last_update)}</span>
           </div>
           <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">Indicateurs financiers:</span>
+            <span className="font-medium">{formatDate(country.financial_data_last_update)}</span>
+          </div>
+          <div className="flex justify-between">
             <span className="text-sm text-muted-foreground">Données Banque Mondiale:</span>
             <span className="font-medium">{formatDate(country.wb_last_updated)}</span>
           </div>

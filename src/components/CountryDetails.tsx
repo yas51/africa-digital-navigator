@@ -7,6 +7,8 @@ import { updateCountryEconomicData } from '@/services/economicDataService';
 import { updatePoliticalIndicators } from '@/lib/externalApis';
 import { updateCountryInfrastructureData } from '@/services/infrastructureDataService';
 import { updateCountryDemographicData } from '@/services/infrastructureDataService';
+import { updateCountryFinancialData } from '@/services/financialDataService';
+import { startFinancialDataUpdates } from '@/services/financialDataService';
 import { useToast } from "@/hooks/use-toast";
 import GeneralInfo from './country/GeneralInfo';
 import EconomicOverview from './country/EconomicOverview';
@@ -21,6 +23,7 @@ import EconomicChart from './country/EconomicChart';
 import LogisticsInfrastructure from './country/LogisticsInfrastructure';
 import DemographicIndicators from './country/DemographicIndicators';
 import CulturalIndicators from './country/CulturalIndicators';
+import FinancialIndicators from './country/FinancialIndicators';
 
 interface CountryDetailsProps {
   country: CountryData;
@@ -45,8 +48,9 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
           const politicalUpdated = await updatePoliticalIndicators(country.id);
           const infrastructureUpdated = await updateCountryInfrastructureData(country.id);
           const demographicUpdated = await updateCountryDemographicData(country.id);
+          const financialUpdated = await updateCountryFinancialData(country.id);
           
-          if (updated || economicUpdated || politicalUpdated || infrastructureUpdated || demographicUpdated) {
+          if (updated || economicUpdated || politicalUpdated || infrastructureUpdated || demographicUpdated || financialUpdated) {
             const { data, error } = await supabase
               .from('countries')
               .select('*')
@@ -67,6 +71,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
           await updatePoliticalIndicators(country.id);
           await updateCountryInfrastructureData(country.id);
           await updateCountryDemographicData(country.id);
+          await updateCountryFinancialData(country.id);
           
           const { data } = await supabase
             .from('countries')
@@ -90,6 +95,14 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
     };
 
     updateCountryData();
+    
+    // Démarrer les mises à jour périodiques des données financières
+    const stopFinancialUpdates = startFinancialDataUpdates(30);
+    
+    return () => {
+      // Arrêter les mises à jour périodiques lors du démontage du composant
+      stopFinancialUpdates();
+    };
   }, [country, toast]);
 
   return (
@@ -100,6 +113,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
         <DigitalOverview country={updatedCountry} />
         <DemographicIndicators country={updatedCountry} />
         <CulturalIndicators country={updatedCountry} />
+        <FinancialIndicators country={updatedCountry} />
         <LogisticsInfrastructure country={updatedCountry} />
         <DigitalIndicators country={updatedCountry} />
         <PoliticalIndicators country={updatedCountry} />

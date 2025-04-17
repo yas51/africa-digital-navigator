@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { setupRealtimeUpdates, fetchCountries } from '@/lib/supabase';
 import { startRealtimeUpdates } from '@/services/demographicDataService';
+import { startFinancialDataUpdates } from '@/services/financialDataService';
 import type { CountryData } from '@/data/countriesData';
 
 export const useCountryData = () => {
@@ -29,11 +30,15 @@ export const useCountryData = () => {
     });
 
     // Démarrage des mises à jour périodiques pour simuler des changements en temps réel
-    const stopRealtimeUpdates = startRealtimeUpdates(20); // Mise à jour toutes les 20 secondes
+    const stopDemographicUpdates = startRealtimeUpdates(20); // Mise à jour toutes les 20 secondes
+    
+    // Démarrage des mises à jour périodiques pour les données financières
+    const stopFinancialUpdates = startFinancialDataUpdates(25); // Mise à jour toutes les 25 secondes
 
     return () => {
       unsubscribe();
-      stopRealtimeUpdates();
+      stopDemographicUpdates();
+      stopFinancialUpdates();
     };
   }, []);
 
