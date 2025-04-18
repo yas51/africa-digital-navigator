@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import type { CountryData } from '@/data/countriesData';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,6 +9,7 @@ import { updateCountryDemographicData } from '@/services/infrastructureDataServi
 import { updateCountryFinancialData } from '@/services/financialDataService';
 import { startFinancialDataUpdates } from '@/services/financialDataService';
 import { useToast } from "@/hooks/use-toast";
+import InvestorSummary from './country/InvestorSummary';
 import GeneralInfo from './country/GeneralInfo';
 import EconomicOverview from './country/EconomicOverview';
 import DigitalOverview from './country/DigitalOverview';
@@ -96,17 +96,16 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ country }) => {
 
     updateCountryData();
     
-    // Démarrer les mises à jour périodiques des données financières
     const stopFinancialUpdates = startFinancialDataUpdates(30);
     
     return () => {
-      // Arrêter les mises à jour périodiques lors du démontage du composant
       stopFinancialUpdates();
     };
   }, [country, toast]);
 
   return (
     <div className="space-y-4">
+      <InvestorSummary country={updatedCountry} />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <GeneralInfo country={updatedCountry} />
         <EconomicOverview country={updatedCountry} />

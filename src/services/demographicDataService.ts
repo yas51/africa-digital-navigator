@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import type { CountryData } from '@/data/countriesData';
 import type { AgeDistribution } from '@/types/demographicData';
@@ -39,7 +38,7 @@ export const fetchDemographicDataFromExternalSource = async (countryCode: string
     ]);
 
     // Fonction pour obtenir la distribution d'âge selon la région
-    const getAgeDistribution = (region: string): AgeDistribution => {
+    const getAgeDistribution = (region: string): Record<string, number> => {
       switch(region) {
         case "Afrique de l'Ouest":
           return {

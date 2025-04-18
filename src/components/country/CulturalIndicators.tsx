@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, Languages, Users, RefreshCw } from 'lucide-react';
@@ -14,7 +13,6 @@ const CulturalIndicators = ({ country }: CulturalIndicatorsProps) => {
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = React.useState(false);
   
-  // Vérifie si les données culturelles sont disponibles
   const hasCulturalData = country.cultural_dimensions !== undefined || 
                          country.ethnic_groups !== undefined ||
                          country.religious_groups !== undefined;
@@ -23,7 +21,6 @@ const CulturalIndicators = ({ country }: CulturalIndicatorsProps) => {
     return null;
   }
 
-  // Déclenche une mise à jour en temps réel des données
   const handleRefresh = async () => {
     if (!country.id || isUpdating) return;
     
@@ -46,13 +43,11 @@ const CulturalIndicators = ({ country }: CulturalIndicatorsProps) => {
     setIsUpdating(false);
   };
 
-  // Formatage des données d'ethnicité pour l'affichage
-  const formatGroupData = (groupData: any) => {
+  const formatGroupData = (groupData: Record<string, number> | null) => {
     if (!groupData) return "Non disponible";
     
     try {
-      const data = typeof groupData === 'object' ? groupData : {};
-      return Object.entries(data)
+      return Object.entries(groupData)
         .map(([key, value]) => (
           <div key={key} className="flex justify-between text-sm">
             <span className="text-muted-foreground">{key}:</span>
@@ -65,7 +60,6 @@ const CulturalIndicators = ({ country }: CulturalIndicatorsProps) => {
     }
   };
 
-  // Formatage des dimensions culturelles
   const formatCulturalDimensions = () => {
     if (!country.cultural_dimensions) return null;
     
@@ -98,7 +92,6 @@ const CulturalIndicators = ({ country }: CulturalIndicatorsProps) => {
     }
   };
 
-  // Formater la date de dernière mise à jour
   const formatLastUpdate = () => {
     if (!country.demographic_data_last_update) return "Non disponible";
     
