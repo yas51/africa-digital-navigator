@@ -16,11 +16,11 @@ const CulturalIndicators = ({ country }: CulturalIndicatorsProps) => {
   
   // Vérifie si les données culturelles sont disponibles
   const hasCulturalData = country.cultural_dimensions !== undefined || 
-                          country.ethnic_groups !== undefined ||
-                          country.religious_groups !== undefined;
+                         country.ethnic_groups !== undefined ||
+                         country.religious_groups !== undefined;
 
   if (!hasCulturalData) {
-    return null; // Ne pas afficher le composant si aucune donnée n'est disponible
+    return null;
   }
 
   // Déclenche une mise à jour en temps réel des données
@@ -46,22 +46,26 @@ const CulturalIndicators = ({ country }: CulturalIndicatorsProps) => {
     setIsUpdating(false);
   };
 
-  // Formatage des données d'ethnicité pour l'affichage si disponibles
+  // Formatage des données d'ethnicité pour l'affichage
   const formatGroupData = (groupData: any) => {
     if (!groupData) return "Non disponible";
     
     try {
       const data = typeof groupData === 'object' ? groupData : {};
       return Object.entries(data)
-        .map(([key, value]) => `${key}: ${Math.round(Number(value))}%`)
-        .join(', ');
+        .map(([key, value]) => (
+          <div key={key} className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{key}:</span>
+            <span className="font-medium">{typeof value === 'number' ? `${value}%` : value}</span>
+          </div>
+        ));
     } catch (error) {
       console.error("Erreur lors du formatage des données de groupe:", error);
       return "Format de données incorrect";
     }
   };
 
-  // Formatage des dimensions culturelles (Hofstede)
+  // Formatage des dimensions culturelles
   const formatCulturalDimensions = () => {
     if (!country.cultural_dimensions) return null;
     
@@ -80,9 +84,11 @@ const CulturalIndicators = ({ country }: CulturalIndicatorsProps) => {
         .map(([key, value]) => {
           const label = dimensionLabels[key] || key;
           return (
-            <div key={key} className="flex justify-between">
-              <span className="text-sm text-muted-foreground">{label}:</span>
-              <span className="font-medium">{value !== null && value !== undefined ? Math.round(Number(value)) : 'N/A'}/100</span>
+            <div key={key} className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{label}:</span>
+              <span className="font-medium">
+                {value !== null && value !== undefined ? Math.round(Number(value)) : 'N/A'}/100
+              </span>
             </div>
           );
         });
@@ -126,31 +132,38 @@ const CulturalIndicators = ({ country }: CulturalIndicatorsProps) => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
-          <div className="mb-3">
-            <span className="text-sm font-medium">Composition de la population</span>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <span className="text-sm font-medium block">Composition de la population</span>
             
             {country.ethnic_groups && (
-              <div className="mt-1">
-                <span className="text-sm text-muted-foreground">Groupes ethniques:</span>
-                <div className="text-sm">{formatGroupData(country.ethnic_groups)}</div>
+              <div className="space-y-1">
+                <span className="text-sm text-muted-foreground block">Groupes ethniques:</span>
+                {formatGroupData(country.ethnic_groups)}
               </div>
             )}
             
             {country.religious_groups && (
-              <div className="mt-1">
-                <span className="text-sm text-muted-foreground">Groupes religieux:</span>
-                <div className="text-sm">{formatGroupData(country.religious_groups)}</div>
+              <div className="space-y-1 mt-2">
+                <span className="text-sm text-muted-foreground block">Groupes religieux:</span>
+                {formatGroupData(country.religious_groups)}
               </div>
             )}
           </div>
           
           {country.cultural_dimensions && (
-            <div className="mt-3">
-              <span className="text-sm font-medium mb-1 block">Dimensions culturelles</span>
-              <div className="space-y-1">
-                {formatCulturalDimensions()}
-              </div>
+            <div className="space-y-1">
+              <span className="text-sm font-medium block mb-1">Dimensions culturelles</span>
+              {formatCulturalDimensions()}
+            </div>
+          )}
+          
+          {country.social_stability_index !== undefined && (
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Indice de stabilité sociale:</span>
+              <span className="font-medium">
+                {Math.round(country.social_stability_index * 100)}/100
+              </span>
             </div>
           )}
           

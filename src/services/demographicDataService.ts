@@ -2,38 +2,81 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { CountryData } from '@/data/countriesData';
 
+const WORLD_BANK_API_BASE = 'https://api.worldbank.org/v2';
+
 // Service pour récupérer les données démographiques de sources externes
 export const fetchDemographicDataFromExternalSource = async (countryCode: string) => {
   try {
-    // TODO: Intégrer une API externe comme World Bank ou UN Data
     console.log(`Récupération des données démographiques pour ${countryCode}`);
     
-    // Simulation de données dynamiques
-    return {
-      population_growth: Math.random() * 3,
-      median_age: 20 + Math.random() * 20,
-      urban_population_percentage: Math.random() * 100,
-      literacy_rate: 50 + Math.random() * 50,
-      higher_education_rate: Math.random() * 50,
-      social_stability_index: Math.random(),
-      // Ajout de données culturelles simulées
-      ethnic_groups: {
-        "Groupe A": Math.round(Math.random() * 60),
-        "Groupe B": Math.round(Math.random() * 30),
-        "Groupe C": Math.round(Math.random() * 20)
-      },
-      religious_groups: {
-        "Religion A": Math.round(Math.random() * 70),
-        "Religion B": Math.round(Math.random() * 20),
-        "Religion C": Math.round(Math.random() * 10)
-      },
-      cultural_dimensions: {
-        power_distance: Math.round(Math.random() * 100),
-        individualism: Math.round(Math.random() * 100),
-        masculinity: Math.round(Math.random() * 100),
-        uncertainty_avoidance: Math.round(Math.random() * 100),
-        long_term_orientation: Math.round(Math.random() * 100)
+    // Récupérer les indicateurs de la Banque Mondiale
+    const indicators = {
+      population_growth: 'SP.POP.GROW', // Croissance de la population
+      literacy_rate: 'SE.ADT.LITR.ZS', // Taux d'alphabétisation
+      urban_population: 'SP.URB.TOTL.IN.ZS', // Population urbaine
+      higher_education: 'SE.TER.ENRR', // Taux d'inscription dans l'enseignement supérieur
+    };
+    
+    const fetchIndicator = async (indicator: string) => {
+      const response = await fetch(
+        `${WORLD_BANK_API_BASE}/country/${countryCode}/indicator/${indicator}?format=json&date=2021`
+      );
+      const data = await response.json();
+      return data[1]?.[0]?.value ?? null;
+    };
+
+    const [
+      populationGrowth,
+      literacyRate,
+      urbanPopulation,
+      higherEducation
+    ] = await Promise.all([
+      fetchIndicator(indicators.population_growth),
+      fetchIndicator(indicators.literacy_rate),
+      fetchIndicator(indicators.urban_population),
+      fetchIndicator(indicators.higher_education),
+    ]);
+
+    // Simulation des données d'âge basée sur les tendances régionales
+    const getAgeDistribution = (region: string) => {
+      switch(region) {
+        case "Afrique de l'Ouest":
+          return {
+            "0-14 ans": 42,
+            "15-64 ans": 55,
+            "65+ ans": 3
+          };
+        case "Afrique du Nord":
+          return {
+            "0-14 ans": 35,
+            "15-64 ans": 60,
+            "65+ ans": 5
+          };
+        default:
+          return {
+            "0-14 ans": 40,
+            "15-64 ans": 57,
+            "65+ ans": 3
+          };
       }
+    };
+
+    // Récupérer la région du pays
+    const { data: countryData } = await supabase
+      .from('countries')
+      .select('region')
+      .eq('id', countryCode)
+      .single();
+
+    return {
+      population_growth: populationGrowth,
+      median_age: 20 + Math.random() * 10, // À remplacer par données réelles
+      urban_population_percentage: urbanPopulation,
+      literacy_rate: literacyRate,
+      higher_education_rate: higherEducation,
+      age_distribution: getAgeDistribution(countryData?.region || ''),
+      social_stability_index: Math.random(), // À remplacer par un indice réel
+      demographic_data_last_update: new Date().toISOString()
     };
   } catch (error) {
     console.error('Erreur lors de la récupération des données démographiques:', error);
@@ -61,7 +104,7 @@ export const updateDemographicDataRealtime = async (countryCode: string) => {
         return false;
       }
       
-      console.log(`Données démographiques mises à jour en temps réel pour: ${countryCode}`);
+      console.log(`Données démographiques mises à jour avec succès pour: ${countryCode}`);
       return true;
     }
     
@@ -72,7 +115,7 @@ export const updateDemographicDataRealtime = async (countryCode: string) => {
   }
 };
 
-// Fonction pour démarrer des mises à jour périodiques plus fréquentes (toutes les X secondes)
+// Fonction pour démarrer des mises à jour périodiques plus fréquentes
 export const startRealtimeUpdates = (intervalInSeconds = 30) => {
   console.log(`Démarrage des mises à jour en temps réel (intervalle: ${intervalInSeconds} secondes)`);
   
@@ -81,7 +124,7 @@ export const startRealtimeUpdates = (intervalInSeconds = 30) => {
       const { data: countries } = await supabase.from('countries').select('id');
       
       if (countries) {
-        // Mettre à jour un pays aléatoire à chaque intervalle pour simuler des mises à jour en temps réel
+        // Mettre à jour un pays aléatoire à chaque intervalle
         const randomIndex = Math.floor(Math.random() * countries.length);
         const randomCountry = countries[randomIndex];
         
@@ -92,35 +135,9 @@ export const startRealtimeUpdates = (intervalInSeconds = 30) => {
     }
   }, intervalInSeconds * 1000);
   
-  // Retourner une fonction pour arrêter les mises à jour
   return () => {
     clearInterval(intervalId);
     console.log('Mises à jour en temps réel arrêtées');
   };
 };
 
-export const updateDemographicDataPeriodically = async () => {
-  try {
-    const { data: countries } = await supabase.from('countries').select('id');
-    
-    if (countries) {
-      for (const country of countries) {
-        const externalData = await fetchDemographicDataFromExternalSource(country.id);
-        
-        if (externalData) {
-          await supabase
-            .from('countries')
-            .update({
-              ...externalData,
-              demographic_data_last_update: new Date().toISOString()
-            })
-            .eq('id', country.id);
-        }
-      }
-      
-      console.log('Mise à jour périodique des données démographiques terminée');
-    }
-  } catch (error) {
-    console.error('Erreur lors de la mise à jour périodique:', error);
-  }
-};
