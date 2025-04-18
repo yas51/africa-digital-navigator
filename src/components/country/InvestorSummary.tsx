@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
@@ -7,7 +6,7 @@ import {
   GlobeIcon,
   UsersIcon,
   BuildingIcon,
-  BanknotesIcon,
+  BanknoteIcon,
   ScaleIcon,
   ShieldCheckIcon,
   ChartBarIcon
@@ -171,7 +170,7 @@ const InvestorSummary = ({ country }: InvestorSummaryProps) => {
             {/* Système financier */}
             <div>
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <BanknotesIcon className="h-5 w-5 text-primary" />
+                <BanknoteIcon className="h-5 w-5 text-primary" />
                 Système Financier
               </h3>
               <div className="space-y-3">
