@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from 'lucide-react'
 
@@ -13,7 +12,7 @@ export const Hero = ({ onTabChange }: HeroProps) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           <div className="space-y-4">
             <h1 className="text-3xl md:text-5xl font-bold tracking-tighter">
-              YOA for Digital & AI Analyzer - SAAS
+              YOA AI LAB Investment Analyzer
             </h1>
             <p className="text-lg md:text-xl text-white/90 max-w-[600px]">
               Plateforme d'analyse décisionnelle pour l'implantation et la transformation digitale.

@@ -12,7 +12,7 @@ const Footer = () => {
             <div className="flex items-center gap-2 mb-4">
               <Globe2 className="h-6 w-6 text-primary" />
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-primary">YOA for Digital & AI Analyzer - SAAS</span>
+                <span className="text-xl font-bold text-primary">YOA AI LAB Investment Analyzer</span>
                 <span className="text-sm text-muted-foreground">For Africa</span>
               </div>
             </div>
@@ -72,7 +72,7 @@ const Footer = () => {
         
         <div className="border-t border-gray-200 mt-8 pt-6">
           <p className="text-sm text-center text-gray-500">
-            © {new Date().getFullYear()} YOA for Digital & AI Analyzer - SAAS. Tous droits réservés.
+            © {new Date().getFullYear()} YOA AI LAB Investment Analyzer. Tous droits réservés.
           </p>
         </div>
       </div>
@@ -81,3 +81,4 @@ const Footer = () => {
 };
 
 export default Footer;
+
