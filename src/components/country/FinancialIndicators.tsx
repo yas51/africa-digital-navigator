@@ -1,12 +1,15 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { HelpCircle, RefreshCw, DollarSign, Building, TrendingUp, BadgePercent, Users, BarChart4 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { updateCountryFinancialData } from '@/services/financialDataService';
 import { useToast } from "@/hooks/use-toast";
+import { 
+  Coins, RefreshCw, Building2, TrendingUp, 
+  PieChart, Users, HelpCircle, DollarSign 
+} from 'lucide-react';
 import type { CountryData } from '@/data/countriesData';
+import { updateCountryFinancialData } from '@/services/financialDataService';
 
 interface FinancialIndicatorsProps {
   country: CountryData;
@@ -15,34 +18,6 @@ interface FinancialIndicatorsProps {
 const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
   const { toast } = useToast();
   const [isRefreshing, setIsRefreshing] = React.useState(false);
-
-  // Fonction pour extraire les données financières du format temporaire
-  const extractFinancialData = () => {
-    if (!country.fiscal_incentives || !Array.isArray(country.fiscal_incentives)) {
-      return null;
-    }
-
-    // Extraire les données à partir du format temporaire dans fiscal_incentives
-    const financialData: Record<string, any> = {};
-    
-    for (const item of country.fiscal_incentives) {
-      if (!item || typeof item !== 'string' || !item.includes(':')) continue;
-      
-      const [key, value] = item.split(':');
-      if (key.startsWith('financial_') || key.includes('_funds_') || key.includes('_capital_') || 
-          key.includes('_financing_') || key.includes('_investors_') || 
-          key.includes('_fintechs_') || key.includes('_banking_')) {
-        if (value === 'true') financialData[key] = true;
-        else if (value === 'false') financialData[key] = false;
-        else if (!isNaN(parseFloat(value))) financialData[key] = parseFloat(value);
-        else financialData[key] = value;
-      }
-    }
-    
-    return Object.keys(financialData).length > 0 ? financialData : null;
-  };
-
-  const financialData = extractFinancialData();
 
   const formatPercent = (value?: number) => {
     if (value === undefined || value === null) return 'N/A';
@@ -60,11 +35,10 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
     setIsRefreshing(true);
     try {
       const success = await updateCountryFinancialData(country.id);
-      
       if (success) {
         toast({
           title: "Données financières actualisées",
-          description: `Les indicateurs financiers pour ${country.name} ont été mis à jour avec des données réelles.`
+          description: `Les indicateurs financiers pour ${country.name} ont été mis à jour.`
         });
       } else {
         toast({
@@ -85,7 +59,6 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
     }
   };
 
-  // Déterminer si les données sont récentes (moins de 30 minutes)
   const isDataRecent = () => {
     if (!country.financial_data_last_update) return false;
     const lastUpdate = new Date(country.financial_data_last_update).getTime();
@@ -95,10 +68,10 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
   };
 
   return (
-    <Card className="card-hover col-span-1 md:col-span-2">
-      <CardHeader className="pb-2 flex flex-row items-center justify-between">
+    <Card className="col-span-1 md:col-span-2">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-lg flex items-center gap-2">
-          <DollarSign className="h-5 w-5 text-primary" /> 
+          <Coins className="h-5 w-5 text-primary" />
           Indicateurs financiers et bancaires
           {isDataRecent() && (
             <span className="ml-2 text-xs text-green-500 font-medium inline-flex items-center">
@@ -123,140 +96,136 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <BadgePercent className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Inclusion financière</span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <HelpCircle className="h-3 w-3 text-muted-foreground/70 cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="max-w-xs">Pourcentage de la population adulte ayant accès à des services financiers formels (Source: Banque Mondiale)</p>
-                  </TooltipContent>
-                </Tooltip>
+          <div className="space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <PieChart className="h-4 w-4 text-primary" />
+                  <span className="font-medium">Inclusion financière</span>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">Pourcentage de la population ayant accès aux services financiers formels</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <span>{formatPercent(country.financial_inclusion_rate)}</span>
               </div>
-              <span className="font-medium">
-                {financialData ? formatPercent(financialData.financial_inclusion_rate) : 'N/A'}
-              </span>
+              <div className="h-2 bg-secondary/20 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-primary rounded-full transition-all duration-500"
+                  style={{ width: `${country.financial_inclusion_rate || 0}%` }}
+                />
+              </div>
             </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Building className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Banques et Fintechs</span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <HelpCircle className="h-3 w-3 text-muted-foreground/70 cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="max-w-xs">Nombre d'institutions financières et fintechs opérant dans le pays (Source: Banque Mondiale et données nationales)</p>
-                  </TooltipContent>
-                </Tooltip>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-primary" />
+                  <span className="font-medium">Établissements financiers</span>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">Nombre de banques et fintechs présentes dans le pays</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <span>{country.banks_fintechs_count || 'N/A'}</span>
               </div>
-              <span className="font-medium">
-                {financialData ? financialData.banks_fintechs_count || 'N/A' : 'N/A'}
-              </span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Stabilité bancaire</span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <HelpCircle className="h-3 w-3 text-muted-foreground/70 cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="max-w-xs">Indice de stabilité du secteur bancaire sur 100 (Source: FMI et données locales)</p>
-                  </TooltipContent>
-                </Tooltip>
+              <div className="h-2 bg-secondary/20 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-primary rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min((country.banks_fintechs_count || 0) / 100 * 100, 100)}%` }}
+                />
               </div>
-              <span className="font-medium">
-                {financialData ? formatScore(financialData.banking_sector_stability) : 'N/A'}
-              </span>
             </div>
           </div>
-          
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <BarChart4 className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Financement des PME</span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <HelpCircle className="h-3 w-3 text-muted-foreground/70 cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="max-w-xs">Indice d'accès au financement pour les PME sur 100 (Source: Banque Mondiale)</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <span className="font-medium">
-                {financialData ? formatScore(financialData.sme_financing_access) : 'N/A'}
-              </span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Investisseurs étrangers</span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <HelpCircle className="h-3 w-3 text-muted-foreground/70 cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="max-w-xs">Niveau de présence d'investisseurs étrangers sur 100 (Source: CNUCED)</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <span className="font-medium">
-                {financialData ? formatScore(financialData.foreign_investors_presence) : 'N/A'}
-              </span>
-            </div>
-            
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Types d'investisseurs</span>
-              </div>
-              <div className="text-right">
-                <div className="flex flex-wrap justify-end gap-1 mt-1">
-                  {financialData && financialData.venture_capital_presence && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      Capital-risque
-                    </span>
-                  )}
-                  {financialData && financialData.development_funds_presence && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      Bailleurs
-                    </span>
-                  )}
+
+          <div className="space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  <span className="font-medium">Stabilité bancaire</span>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">Indice de stabilité du secteur bancaire</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
+                <span>{formatScore(country.banking_sector_stability)}</span>
+              </div>
+              <div className="h-2 bg-secondary/20 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-primary rounded-full transition-all duration-500"
+                  style={{ width: `${country.banking_sector_stability || 0}%` }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-primary" />
+                  <span className="font-medium">Accès PME</span>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">Facilité d'accès au financement pour les PME</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <span>{formatScore(country.sme_financing_access)}</span>
+              </div>
+              <div className="h-2 bg-secondary/20 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-primary rounded-full transition-all duration-500"
+                  style={{ width: `${country.sme_financing_access || 0}%` }}
+                />
               </div>
             </div>
           </div>
         </div>
-        
-        {country.foreign_investors_types && country.foreign_investors_types.length > 0 && (
-          <div className="mt-4 border-t pt-3">
-            <h4 className="text-sm font-medium mb-2">Détail des investisseurs présents</h4>
-            <div className="flex flex-wrap gap-1">
-              {country.foreign_investors_types.map((type, index) => (
-                <span key={index} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                  {type}
-                </span>
-              ))}
-            </div>
+
+        <div className="mt-4 border-t pt-4">
+          <h4 className="text-sm font-medium mb-3">Types d'investisseurs présents</h4>
+          <div className="flex flex-wrap gap-2">
+            {country.venture_capital_presence && (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                Capital-risque
+              </span>
+            )}
+            {country.development_funds_presence && (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                Fonds de développement
+              </span>
+            )}
+            {country.foreign_investors_types?.map((type, index) => (
+              <span 
+                key={index}
+                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary/10 text-secondary-foreground"
+              >
+                {type}
+              </span>
+            ))}
           </div>
-        )}
-        
+        </div>
+
         {country.financial_data_last_update && (
           <div className="mt-4 text-xs text-muted-foreground text-right">
             Dernière mise à jour: {new Date(country.financial_data_last_update).toLocaleString('fr-FR')}
             {isDataRecent() && (
-              <span className="text-green-500 ml-1">(Données récentes de la Banque Mondiale)</span>
+              <span className="text-green-500 ml-1">(Données de la Banque Mondiale)</span>
             )}
           </div>
         )}

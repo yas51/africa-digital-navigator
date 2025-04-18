@@ -1,156 +1,141 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, BookOpen, Building, BarChart3, RefreshCw } from 'lucide-react';
+import { Users, GraduationCap, Home, TrendingUp } from 'lucide-react';
+import { Progress } from "@/components/ui/progress";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { CountryData } from '@/data/countriesData';
-import { updateDemographicDataRealtime } from '@/services/demographicDataService';
-import { useToast } from "@/hooks/use-toast";
+import type { AgeDistribution } from '@/types/demographicData';
 
 interface DemographicIndicatorsProps {
   country: CountryData;
 }
 
 const DemographicIndicators = ({ country }: DemographicIndicatorsProps) => {
-  const { toast } = useToast();
-  const [isUpdating, setIsUpdating] = React.useState(false);
-
-  // Vérifie si les données démographiques sont disponibles
-  const hasDemographicData = country.population_growth !== undefined || 
-                            country.median_age !== undefined ||
-                            country.literacy_rate !== undefined;
-
-  if (!hasDemographicData) {
-    return null; // Ne pas afficher le composant si aucune donnée n'est disponible
-  }
-
-  // Déclenche une mise à jour en temps réel des données
-  const handleRefresh = async () => {
-    if (!country.id || isUpdating) return;
-    
-    setIsUpdating(true);
-    const success = await updateDemographicDataRealtime(country.id);
-    
-    if (success) {
-      toast({
-        title: "Données mises à jour",
-        description: "Les indicateurs démographiques ont été actualisés.",
-      });
-    } else {
-      toast({
-        title: "Échec de mise à jour",
-        description: "Impossible de mettre à jour les indicateurs démographiques.",
-        variant: "destructive"
-      });
-    }
-    
-    setIsUpdating(false);
+  const formatPercent = (value?: number) => {
+    if (value === undefined || value === null) return 'N/A';
+    return `${value.toFixed(1)}%`;
   };
 
-  // Fonction de formatage sécurisé pour les valeurs numériques
-  const safeFormat = (value: any, decimals: number = 1) => {
-    if (value === undefined || value === null) return "Non disponible";
-    return Number(value).toFixed(decimals);
+  const formatNumber = (value?: number) => {
+    if (value === undefined || value === null) return 'N/A';
+    return value.toFixed(1);
   };
 
-  // Formater la date de dernière mise à jour
-  const formatLastUpdate = () => {
-    if (!country.demographic_data_last_update) return "Non disponible";
-    
+  // Parse age distribution safely
+  const getAgeDistribution = (): AgeDistribution => {
     try {
-      const date = new Date(country.demographic_data_last_update);
-      return date.toLocaleString('fr-FR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
+      if (typeof country.age_distribution === 'object' && country.age_distribution !== null) {
+        return country.age_distribution as AgeDistribution;
+      }
     } catch (error) {
-      return "Date incorrecte";
+      console.error('Erreur lors du parsing de la distribution d\'âge:', error);
     }
+    return {
+      "0-14 ans": 0,
+      "15-64 ans": 0,
+      "65+ ans": 0
+    };
   };
 
-  // Formater la répartition par âge
-  const formatAgeDistribution = () => {
-    if (!country.age_distribution) return null;
-    
-    try {
-      const ageData = typeof country.age_distribution === 'object' ? country.age_distribution : {};
-      return Object.entries(ageData).map(([key, value]) => (
-        <div key={key} className="flex justify-between text-sm">
-          <span className="text-muted-foreground">{key}:</span>
-          <span className="font-medium">{typeof value === 'number' ? `${value}%` : value}</span>
-        </div>
-      ));
-    } catch (error) {
-      console.error('Erreur lors du formatage des données d\'âge:', error);
-      return null;
-    }
+  const ageDistribution = getAgeDistribution();
+
+  const isDataRecent = () => {
+    if (!country.demographic_data_last_update) return false;
+    const lastUpdate = new Date(country.demographic_data_last_update).getTime();
+    const now = new Date().getTime();
+    const thirtyMinutesInMs = 30 * 60 * 1000;
+    return (now - lastUpdate) < thirtyMinutesInMs;
   };
 
   return (
-    <Card className="card-hover">
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Users className="h-5 w-5 text-primary" /> Indicateurs démographiques
-          </CardTitle>
-          <button 
-            className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1"
-            onClick={handleRefresh}
-            disabled={isUpdating}
-          >
-            <RefreshCw className={`h-3 w-3 ${isUpdating ? 'animate-spin' : ''}`} />
-            Actualiser
-          </button>
-        </div>
+    <Card className="col-span-1 md:col-span-2">
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Users className="h-5 w-5 text-primary" />
+          Indicateurs démographiques
+          {isDataRecent() && (
+            <span className="ml-2 text-xs text-green-500 font-medium inline-flex items-center">
+              <span className="relative flex h-2 w-2 mr-1">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              Données réelles
+            </span>
+          )}
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {country.population_growth !== undefined && (
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Croissance population:</span>
-              <span className="font-medium">{safeFormat(country.population_growth)}%</span>
+      <CardContent className="space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  <span className="font-medium">Croissance démographique</span>
+                </div>
+                <span>{formatPercent(country.population_growth)}</span>
+              </div>
+              <Progress value={country.population_growth ? Math.min(country.population_growth * 10, 100) : 0} />
             </div>
-          )}
-          
-          {country.median_age !== undefined && (
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Âge médian:</span>
-              <span className="font-medium">{safeFormat(country.median_age)} ans</span>
-            </div>
-          )}
-          
-          {country.urban_population_percentage !== undefined && (
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Population urbaine:</span>
-              <span className="font-medium">{safeFormat(country.urban_population_percentage)}%</span>
-            </div>
-          )}
-          
-          {country.literacy_rate !== undefined && (
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Taux d'alphabétisation:</span>
-              <span className="font-medium">{safeFormat(country.literacy_rate)}%</span>
-            </div>
-          )}
-          
-          {country.higher_education_rate !== undefined && (
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Éducation supérieure:</span>
-              <span className="font-medium">{safeFormat(country.higher_education_rate)}%</span>
-            </div>
-          )}
 
-          {country.age_distribution && (
-            <div className="space-y-1">
-              <span className="text-sm text-muted-foreground block mb-1">Répartition par âge:</span>
-              {formatAgeDistribution()}
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center gap-2">
+                  <Home className="h-4 w-4 text-primary" />
+                  <span className="font-medium">Population urbaine</span>
+                </div>
+                <span>{formatPercent(country.urban_population_percentage)}</span>
+              </div>
+              <Progress value={country.urban_population_percentage || 0} />
             </div>
-          )}
-          
-          <div className="text-xs text-muted-foreground mt-4">
-            Dernière mise à jour: {formatLastUpdate()}
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="h-4 w-4 text-primary" />
+                  <span className="font-medium">Taux d'alphabétisation</span>
+                </div>
+                <span>{formatPercent(country.literacy_rate)}</span>
+              </div>
+              <Progress value={country.literacy_rate || 0} />
+            </div>
+
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="h-4 w-4 text-primary" />
+                  <span className="font-medium">Études supérieures</span>
+                </div>
+                <span>{formatPercent(country.higher_education_rate)}</span>
+              </div>
+              <Progress value={country.higher_education_rate || 0} />
+            </div>
           </div>
         </div>
+
+        <div>
+          <h3 className="font-medium mb-3">Distribution par âge</h3>
+          <div className="grid grid-cols-3 gap-2">
+            {Object.entries(ageDistribution).map(([age, percentage]) => (
+              <div key={age} className="bg-secondary/10 p-3 rounded-lg">
+                <div className="text-sm font-medium">{age}</div>
+                <div className="text-2xl font-semibold">{formatPercent(percentage)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {country.demographic_data_last_update && (
+          <div className="text-xs text-muted-foreground text-right">
+            Dernière mise à jour: {new Date(country.demographic_data_last_update).toLocaleString('fr-FR')}
+            {isDataRecent() && (
+              <span className="text-green-500 ml-1">(Données réelles de la Banque Mondiale)</span>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import type { CountryData } from '@/data/countriesData';
 
@@ -37,8 +36,8 @@ export const fetchDemographicDataFromExternalSource = async (countryCode: string
       fetchIndicator(indicators.higher_education),
     ]);
 
-    // Simulation des données d'âge basée sur les tendances régionales
-    const getAgeDistribution = (region: string) => {
+    // Typage plus strict pour la distribution d'âge
+    const getAgeDistribution = (region: string): { [key: string]: number } => {
       switch(region) {
         case "Afrique de l'Ouest":
           return {
@@ -140,4 +139,3 @@ export const startRealtimeUpdates = (intervalInSeconds = 30) => {
     console.log('Mises à jour en temps réel arrêtées');
   };
 };
-
