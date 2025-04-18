@@ -56,7 +56,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li className="flex items-center gap-2 text-sm text-gray-600">
                 <Mail className="h-4 w-4" />
-                contact@africa-digital-navigator.com
+                contact@yoalab.com
               </li>
               <li className="flex items-center gap-2 text-sm text-gray-600">
                 <Phone className="h-4 w-4" />
@@ -64,7 +64,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-2 text-sm text-gray-600">
                 <MapPin className="h-4 w-4" />
-                Paris, France
+                Casablanca, Maroc
               </li>
             </ul>
           </div>
