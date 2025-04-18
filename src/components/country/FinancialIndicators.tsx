@@ -28,6 +28,37 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
     if (value === undefined || value === null) return 'N/A';
     return value.toFixed(1);
   };
+  
+  // Extraire les données financières à partir du tableau fiscal_incentives si nécessaire
+  const getFinancialValueFromFiscalIncentives = (key: string): number | undefined => {
+    if (!country.fiscal_incentives || !Array.isArray(country.fiscal_incentives)) {
+      return undefined;
+    }
+    
+    const entry = country.fiscal_incentives.find(item => 
+      typeof item === 'string' && item.startsWith(`${key}:`)
+    );
+    
+    if (entry) {
+      const value = parseFloat(entry.split(':')[1]);
+      return isNaN(value) ? undefined : value;
+    }
+    
+    return undefined;
+  };
+  
+  // Obtenir les valeurs financières (soit directement, soit depuis fiscal_incentives)
+  const getFinancialValue = (directValue: any, fiscalKey: string): number | undefined => {
+    if (directValue !== undefined && directValue !== null) {
+      return typeof directValue === 'number' ? directValue : undefined;
+    }
+    return getFinancialValueFromFiscalIncentives(fiscalKey);
+  };
+
+  const financialInclusionRate = getFinancialValue(country.financial_inclusion_rate, 'financial_inclusion_rate');
+  const banksFintechsCount = getFinancialValue(country.banks_fintechs_count, 'banks_fintechs_count');
+  const bankingSectorStability = getFinancialValue(country.banking_sector_stability, 'banking_sector_stability');
+  const smeFinancingAccess = getFinancialValue(country.sme_financing_access, 'sme_financing_access');
 
   const handleRefresh = async () => {
     if (isRefreshing) return;
@@ -60,8 +91,8 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
   };
 
   const isDataRecent = () => {
-    if (!country.financial_data_last_update) return false;
-    const lastUpdate = new Date(country.financial_data_last_update).getTime();
+    if (!country.political_indicators_last_update) return false;
+    const lastUpdate = new Date(country.political_indicators_last_update).getTime();
     const now = new Date().getTime();
     const thirtyMinutesInMs = 30 * 60 * 1000;
     return (now - lastUpdate) < thirtyMinutesInMs;
@@ -111,12 +142,12 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <span>{formatPercent(country.financial_inclusion_rate)}</span>
+                <span>{formatPercent(financialInclusionRate)}</span>
               </div>
               <div className="h-2 bg-secondary/20 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-primary rounded-full transition-all duration-500"
-                  style={{ width: `${country.financial_inclusion_rate || 0}%` }}
+                  style={{ width: `${financialInclusionRate || 0}%` }}
                 />
               </div>
             </div>
@@ -135,12 +166,12 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <span>{country.banks_fintechs_count || 'N/A'}</span>
+                <span>{banksFintechsCount || 'N/A'}</span>
               </div>
               <div className="h-2 bg-secondary/20 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-primary rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min((country.banks_fintechs_count || 0) / 100 * 100, 100)}%` }}
+                  style={{ width: `${Math.min((banksFintechsCount || 0) / 100 * 100, 100)}%` }}
                 />
               </div>
             </div>
@@ -161,12 +192,12 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <span>{formatScore(country.banking_sector_stability)}</span>
+                <span>{formatScore(bankingSectorStability)}</span>
               </div>
               <div className="h-2 bg-secondary/20 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-primary rounded-full transition-all duration-500"
-                  style={{ width: `${country.banking_sector_stability || 0}%` }}
+                  style={{ width: `${bankingSectorStability || 0}%` }}
                 />
               </div>
             </div>
@@ -185,12 +216,12 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <span>{formatScore(country.sme_financing_access)}</span>
+                <span>{formatScore(smeFinancingAccess)}</span>
               </div>
               <div className="h-2 bg-secondary/20 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-primary rounded-full transition-all duration-500"
-                  style={{ width: `${country.sme_financing_access || 0}%` }}
+                  style={{ width: `${smeFinancingAccess || 0}%` }}
                 />
               </div>
             </div>
@@ -221,9 +252,9 @@ const FinancialIndicators = ({ country }: FinancialIndicatorsProps) => {
           </div>
         </div>
 
-        {country.financial_data_last_update && (
+        {country.political_indicators_last_update && (
           <div className="mt-4 text-xs text-muted-foreground text-right">
-            Dernière mise à jour: {new Date(country.financial_data_last_update).toLocaleString('fr-FR')}
+            Dernière mise à jour: {new Date(country.political_indicators_last_update).toLocaleString('fr-FR')}
             {isDataRecent() && (
               <span className="text-green-500 ml-1">(Données de la Banque Mondiale)</span>
             )}

@@ -1,5 +1,7 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import type { CountryData } from '@/data/countriesData';
+import type { AgeDistribution } from '@/types/demographicData';
 
 const WORLD_BANK_API_BASE = 'https://api.worldbank.org/v2';
 
@@ -36,8 +38,8 @@ export const fetchDemographicDataFromExternalSource = async (countryCode: string
       fetchIndicator(indicators.higher_education),
     ]);
 
-    // Typage plus strict pour la distribution d'âge
-    const getAgeDistribution = (region: string): { [key: string]: number } => {
+    // Fonction pour obtenir la distribution d'âge selon la région
+    const getAgeDistribution = (region: string): AgeDistribution => {
       switch(region) {
         case "Afrique de l'Ouest":
           return {
@@ -93,7 +95,13 @@ export const updateDemographicDataRealtime = async (countryCode: string) => {
       const { error } = await supabase
         .from('countries')
         .update({
-          ...externalData,
+          population_growth: externalData.population_growth,
+          median_age: externalData.median_age,
+          urban_population_percentage: externalData.urban_population_percentage,
+          literacy_rate: externalData.literacy_rate,
+          higher_education_rate: externalData.higher_education_rate,
+          age_distribution: externalData.age_distribution,
+          social_stability_index: externalData.social_stability_index,
           demographic_data_last_update: new Date().toISOString()
         })
         .eq('id', countryCode);

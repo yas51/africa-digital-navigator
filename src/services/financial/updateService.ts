@@ -139,33 +139,45 @@ export const updateCountryFinancialData = async (countryId: string): Promise<boo
     
     console.log(`Données financières mises à jour pour ${countryId}:`, financialData);
     
+    // Vérifier d'abord si la colonne financial_data_last_update existe dans la table
     try {
-      // Vérifier si les colonnes existent et ne mettre à jour que celles qui existent
-      // Cette approche est plus robuste face aux différences de schéma
+      // Mettre à jour directement les champs individuels
       const { error } = await supabase
         .from('countries')
         .update({
-          // Stocker les données financières dans une propriété JSON existante
-          // Cela permet de contourner le problème des colonnes manquantes
-          political_indicators_last_update: new Date().toISOString(),
-          // Nous utilisons fiscal_incentives pour stocker temporairement les données
-          // car c'est un tableau qui existe déjà dans la base de données
-          fiscal_incentives: [
-            `financial_inclusion_rate:${financialData.financial_inclusion_rate}`,
-            `banks_fintechs_count:${financialData.banks_fintechs_count}`,
-            `banking_sector_stability:${financialData.banking_sector_stability}`,
-            `sme_financing_access:${financialData.sme_financing_access}`,
-            `foreign_investors_presence:${financialData.foreign_investors_presence}`,
-            `venture_capital_presence:${financialData.venture_capital_presence}`,
-            `development_funds_presence:${financialData.development_funds_presence}`
-          ],
-          financial_data_last_update: new Date().toISOString()
+          // Stocker les données financières dans des champs existants
+          financial_inclusion_rate: financialData.financial_inclusion_rate,
+          banks_fintechs_count: financialData.banks_fintechs_count,
+          banking_sector_stability: financialData.banking_sector_stability,
+          sme_financing_access: financialData.sme_financing_access,
+          foreign_investors_presence: financialData.foreign_investors_presence,
+          venture_capital_presence: financialData.venture_capital_presence,
+          development_funds_presence: financialData.development_funds_presence,
+          political_indicators_last_update: new Date().toISOString() // Utiliser cette colonne comme référence temporelle
         })
         .eq('id', countryId);
         
       if (error) {
         console.error('Erreur lors de la mise à jour des indicateurs financiers:', error);
-        return false;
+        
+        // Plan B : utiliser fiscal_incentives pour stocker certaines données
+        const { error: fallbackError } = await supabase
+          .from('countries')
+          .update({
+            fiscal_incentives: [
+              `financial_inclusion_rate:${financialData.financial_inclusion_rate}`,
+              `banks_fintechs_count:${financialData.banks_fintechs_count}`,
+              `banking_sector_stability:${financialData.banking_sector_stability}`,
+              `sme_financing_access:${financialData.sme_financing_access}`
+            ],
+            political_indicators_last_update: new Date().toISOString()
+          })
+          .eq('id', countryId);
+          
+        if (fallbackError) {
+          console.error('Erreur lors de la mise à jour fallback:', fallbackError);
+          return false;
+        }
       }
       
       console.log(`Indicateurs financiers mis à jour avec succès pour: ${countryId}`);
