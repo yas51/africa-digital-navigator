@@ -39,7 +39,7 @@ export const Hero = ({ onTabChange }: HeroProps) => {
           
           <div className="hidden md:flex justify-center">
             <img 
-              src="africa-1297148_1280.png" 
+              src="https://images.unsplash.com/photo-1614093302611-8efc4de20ec0?w=800&auto=format&fit=crop&q=80" 
               alt="Carte de l'Afrique" 
               className="rounded-lg shadow-xl max-w-full max-h-[400px] object-cover border-4 border-white/20" 
             />
