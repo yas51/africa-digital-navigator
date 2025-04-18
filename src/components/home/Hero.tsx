@@ -39,7 +39,7 @@ export const Hero = ({ onTabChange }: HeroProps) => {
           
           <div className="hidden md:flex justify-center">
             <img 
-              src="https://e7.pngegg.com/pngimages/593/31/png-clipart-africa-map-africa-photography-orange.png" 
+              src="https://yop.l-frii.com/wp-content/uploads/2025/02/13-millions-de-m2-ce-pays-dAfrique-du-Nord-offre-une-partie-de-son-territoire-aux-industriels-1024x676.jpeg" 
               alt="Carte de l'Afrique" 
               className="rounded-lg shadow-xl max-w-full max-h-[400px] object-cover border-4 border-white/20" 
             />
