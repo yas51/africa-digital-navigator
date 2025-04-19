@@ -4,6 +4,8 @@ import { BarChart3, Globe2, FileBarChart, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
 import type jsPDF from 'jspdf';
+import { useAuth } from "@/components/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   onTabChange?: (tab: string) => void;
@@ -11,7 +13,9 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onTabChange }) => {
   const { toast } = useToast();
-  
+  const { session } = useAuth();
+  const navigate = useNavigate();
+
   const handleTabClick = (tab: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     if (onTabChange) {
@@ -58,6 +62,11 @@ const Header: React.FC<HeaderProps> = ({ onTabChange }) => {
     };
     
     generatePDF();
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/auth');
   };
 
   return (
@@ -110,14 +119,19 @@ const Header: React.FC<HeaderProps> = ({ onTabChange }) => {
             <FileBarChart className="mr-2 h-4 w-4" />
             Rapports
           </Button>
-          <Button 
-            variant="default" 
-            size="sm"
-            onClick={handleTabClick("country-analysis")}
-          >
-            <Settings className="mr-2 h-4 w-4" />
-            Commencer
-          </Button>
+          {session ? (
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              Déconnexion
+            </Button>
+          ) : (
+            <Button 
+              variant="default" 
+              size="sm"
+              onClick={() => navigate('/auth')}
+            >
+              Se connecter
+            </Button>
+          )}
         </div>
       </div>
     </header>
