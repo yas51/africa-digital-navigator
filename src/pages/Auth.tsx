@@ -25,6 +25,7 @@ const Auth = () => {
     setLoading(true);
     try {
       if (isSignUp) {
+        console.log("Inscription avec les données:", { email, firstName, lastName, company, phone });
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -51,6 +52,7 @@ const Auth = () => {
         navigate('/');
       }
     } catch (error: any) {
+      console.error("Erreur d'authentification:", error);
       toast({
         title: "Erreur",
         description: error.message,
