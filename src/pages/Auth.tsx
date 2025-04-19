@@ -13,6 +13,8 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [company, setCompany] = useState('');
+  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
@@ -30,6 +32,8 @@ const Auth = () => {
             data: {
               first_name: firstName,
               last_name: lastName,
+              company,
+              phone
             }
           }
         });
@@ -89,6 +93,22 @@ const Auth = () => {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   required
+                />
+              </div>
+              <div>
+                <Input
+                  type="text"
+                  placeholder="Entreprise"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                />
+              </div>
+              <div>
+                <Input
+                  type="tel"
+                  placeholder="Téléphone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                 />
               </div>
             </>
