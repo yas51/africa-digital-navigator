@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { BarChart3, Globe2, FileBarChart, Settings } from 'lucide-react';
@@ -7,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import type jsPDF from 'jspdf';
 import { useAuth } from "@/components/AuthProvider";
 import { useNavigate } from "react-router-dom";
-import { supabase } from '@/integrations/supabase/client'; // Ajout de l'import manquant
+import { supabase } from '@/integrations/supabase/client';
 
 interface HeaderProps {
   onTabChange?: (tab: string) => void;
