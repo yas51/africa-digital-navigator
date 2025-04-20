@@ -1,6 +1,6 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
@@ -27,10 +27,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Configurer l'écouteur d'événements de changement d'état d'authentification
+    // Configure auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
         console.log("Auth state changed:", event, currentSession?.user?.id);
@@ -61,7 +62,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     );
 
-    // Vérifier la session initiale
+    // Check initial session
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
       console.log("Initial session check:", initialSession?.user?.id);
       setSession(initialSession);
@@ -85,13 +86,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           });
       } else {
         setLoading(false);
+        // Redirect to auth page if not on auth page
+        if (location.pathname !== '/auth') {
+          navigate('/auth');
+        }
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, location.pathname]);
+
+  useEffect(() => {
+    // Redirect logic based on authentication state
+    if (!loading) {
+      if (!session && location.pathname !== '/auth') {
+        navigate('/auth');
+      }
+    }
+  }, [session, loading, navigate, location.pathname]);
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Chargement...</div>;
